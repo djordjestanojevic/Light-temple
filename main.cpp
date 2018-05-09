@@ -8,7 +8,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     // Postavljamo ikonicu prozora
-    app.setWindowIcon(QIcon("C:/Users/Djordje/Desktop/FAX/Razvoj softvera/Projekat/Images/icon"));
+    app.setWindowIcon(QIcon(":/Images/icon"));
 
     // Postavljamo glavni prozor aplikacije
     QMainWindow mainWin;

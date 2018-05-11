@@ -6,14 +6,9 @@ SOURCES += \
     main.cpp \
     mainwindow.cpp \
     scene.cpp \
-    view.cpp \
-    level01.cpp \
-    player.cpp
+    view.cpp
 
 HEADERS += \
     mainwindow.h \
     scene.h \
-    view.h \
-    level01.h \
-    level01.h \
-    player.h
+    view.h

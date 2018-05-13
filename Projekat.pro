@@ -4,11 +4,17 @@ greaterThan(QT_MAJOR_VERSION, 4) : QT  += widgets
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp \
-    scene.cpp \
-    view.cpp
+    title.cpp \
+    levels.cpp \
+    view.cpp \
+    level01.cpp \
+    settings.cpp
 
 HEADERS += \
-    mainwindow.h \
-    scene.h \
-    view.h
+    title.h \
+    levels.h \
+    view.h \
+    level01.h \
+    settings.h
+
+

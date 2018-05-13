@@ -2,7 +2,7 @@
 #include <QSplashScreen>
 #include <QTimer>
 
-#include "mainwindow.h"
+#include "view.h"
 
 int main(int argc, char *argv[])
 {
@@ -17,14 +17,13 @@ int main(int argc, char *argv[])
     splash->setPixmap(QPixmap("C:/Users/Djordje/Desktop/FAX/Razvoj softvera/Projekat/Images/icon"));
     splash->show();
 
-    // Postavljamo glavni prozor aplikacije
-    MainWindow mainWin;
-    // Postavljamo velicinu prozora
-    mainWin.setSize();
+    // Prikaz pocetnog ekrana
+    View *view = new View();
+
 
     // singleShot funkcija poziva slot posle zadatog intervala
     QTimer::singleShot(1000, splash, SLOT(close()));
-    QTimer::singleShot(1000, &mainWin, SLOT(show()));
+    QTimer::singleShot(1000, view, SLOT(show()));
 
     // Ulazimo u glavnu petlju
     return app.exec();

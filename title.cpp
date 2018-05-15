@@ -12,11 +12,11 @@ Title::Title(View *v, QWidget *parent)
     this->setSceneRect(0,0,1280,760);
 
     // Dodajemo pozadinu
-    background = new QGraphicsPixmapItem(QPixmap("C:/Users/Djordje/Desktop/Projekat/Images/background").scaled(1280, 760));
+    background = new QGraphicsPixmapItem(QPixmap("./Images/background").scaled(1280, 760));
     addItem(background);
 
     // Dodajemo logo
-    logo = new QGraphicsPixmapItem(QPixmap("C:/Users/Djordje/Desktop/Projekat/Images/icon"));
+    logo = new QGraphicsPixmapItem(QPixmap("./Images/icon"));
     logo->setScale(0.5);
     logo->setPos(this->width()/2 - 142, this->height()/2 - 120);
     addItem(logo);

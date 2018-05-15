@@ -14,17 +14,15 @@ Level01::Level01(QWidget *parent)
     connect(&m_timer, &QTimer::timeout, this, &Level01::movePlayer);
 }
 
-bool Level01::initPlayField() {
+void Level01::initPlayField() {
 
-    background = this->addRect(0, 0, 1280,760);
-    background->setBrush(QBrush(QPixmap("C:/Users/Djordje/Desktop/Projekat/Images/wall").scaled(600, 600)));
+    makeMap();
 
-    ground = new QGraphicsPixmapItem(QPixmap("C:/Users/Djordje/Desktop/Projekat/Images/ground"));
-    addItem(ground);
-    ground->setPos(0, 700);
-
-    fireboy = this->addPixmap(QPixmap("C:/Users/Djordje/Desktop/Projekat/Images/fireboy").scaled(55, 100));
+    fireboy = new Player();
     fireboy->setPos(100, 600);
+
+    while(!fireboy->collidesWithBlock(blocks))
+        fireboy->moveBy(0, 1);
 }
 
 void Level01::movePlayer() {
@@ -71,6 +69,31 @@ void Level01::keyReleaseEvent(QKeyEvent *event)
             m_timer.stop();
             break;
         default:
+            break;
+    }
+}
+
+void Level01::makeMap() {
+
+
+    background = this->addRect(0, 0, 1280,760);
+    background->setBrush(QBrush(QPixmap("./Images/wall").scaled(600, 600)));
+
+    std::ifstream f("C:/Users/Djordje/Desktop/build-Projekat-Desktop_Qt_5_10_1_MinGW_32bit-Release/release/map.txt");
+
+    while(f.is_open()) {
+        std::string type;
+        int x;
+        int y;
+        f >> type >> x >> y;
+        if(type == "Block") {
+            std::cout << "sds" << std::endl;
+            QGraphicsPixmapItem *block = new QGraphicsPixmapItem(QPixmap("./Images/block").scaled(50, 50));
+            addItem(block);
+            block->setPos(x ,y);
+            blocks.append(block);
+        }
+        else
             break;
     }
 }

@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QSplashScreen>
 #include <QTimer>
-#include <iostream>
+
 #include "view.h"
 
 int main(int argc, char *argv[])

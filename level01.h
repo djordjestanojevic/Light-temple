@@ -7,6 +7,8 @@
 #include <QTimer>
 #include <QKeyEvent>
 #include <fstream>
+#include <string>
+
 #include "player.h"
 
 class Level01: public QGraphicsScene {
@@ -15,20 +17,22 @@ public:
     Level01(QWidget *parent = 0);
 private:
     void initPlayField();
-    void makeMap();
+    void MakeMap();
 
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
 
-    QList<QGraphicsPixmapItem *> blocks;
     QGraphicsRectItem *background;
-    QGraphicsPixmapItem *ground;
 
     Player *fireboy;
+    Player *watergirl;
+    QList<QGraphicsPixmapItem *> blocks;
 
     QTimer m_timer;
 
     int direction;
+
+
 private slots:
     void movePlayer();
 };

@@ -12,33 +12,46 @@ Level01::Level01(QWidget *parent)
 
     m_timer.setInterval(20);
     connect(&m_timer, &QTimer::timeout, this, &Level01::movePlayer);
+
 }
 
 void Level01::initPlayField() {
 
-    makeMap();
+    MakeMap();
 
     fireboy = new Player();
     fireboy->setPos(100, 600);
+    this->addItem(fireboy);
 
-    while(!fireboy->collidesWithBlock(blocks))
+    std::cout << blocks.length() << std::endl;
+
+    while(!fireboy->collidesWithBlocks(blocks))
         fireboy->moveBy(0, 1);
 }
 
 void Level01::movePlayer() {
 
-
-    std::cout << direction << std::endl;
-
     if(direction == 1) {
+        if(fireboy->pos().x() > 1220) {
+            m_timer.stop();
+            return;
+        }
+
         fireboy->moveBy(5, 0);
 
     }
 
     if(direction == -1) {
+        std::cout << fireboy->pos().x() << std::endl;
+        if(fireboy->pos().x() < 5) {
+            direction = 0;
+            return;
+        }
+
         fireboy->moveBy(-5, 0);
 
     }
+
 }
 
 void Level01::keyPressEvent(QKeyEvent *event)
@@ -73,24 +86,26 @@ void Level01::keyReleaseEvent(QKeyEvent *event)
     }
 }
 
-void Level01::makeMap() {
-
+void Level01::MakeMap() {
 
     background = this->addRect(0, 0, 1280,760);
     background->setBrush(QBrush(QPixmap("./Images/wall").scaled(600, 600)));
 
-    std::ifstream f("C:/Users/Djordje/Desktop/build-Projekat-Desktop_Qt_5_10_1_MinGW_32bit-Release/release/map.txt");
 
-    while(f.is_open()) {
-        std::string type;
+    std::ifstream f("./map.txt", std::ifstream::in);
+    while(f.is_open())
+    {
+        std::cout << "dssd" << std::endl;
+        std::string elem;
         int x;
         int y;
-        f >> type >> x >> y;
-        if(type == "Block") {
-            std::cout << "sds" << std::endl;
-            QGraphicsPixmapItem *block = new QGraphicsPixmapItem(QPixmap("./Images/block").scaled(50, 50));
+        f >> elem >> x >> y;
+        if(elem == "Block")
+        {
+            QGraphicsPixmapItem *block = new QGraphicsPixmapItem;
+            block->setPixmap(QPixmap("./Images/block").scaled(50, 50));
+            block->setPos(x,y);
             addItem(block);
-            block->setPos(x ,y);
             blocks.append(block);
         }
         else

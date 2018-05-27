@@ -6,6 +6,8 @@
 #include <QGraphicsRectItem>
 #include <QTimer>
 #include <QKeyEvent>
+#include <QPropertyAnimation>
+
 #include <fstream>
 #include <string>
 
@@ -15,20 +17,33 @@ class Level01: public QGraphicsScene {
     Q_OBJECT
 public:
     Level01(QWidget *parent = 0);
+
+    void timerEvent(QTimerEvent *event);
 private:
-    void initPlayField();
+    void initPlayers();
     void MakeMap();
 
     void keyPressEvent(QKeyEvent *event);
     void keyReleaseEvent(QKeyEvent *event);
 
-    QGraphicsRectItem *background;
-
     Player *fireboy;
     Player *watergirl;
+
+    QGraphicsRectItem *background;
+
     QList<QGraphicsPixmapItem *> blocks;
+    QList<QGraphicsPixmapItem *> lava;
+    QList<QGraphicsPixmapItem *> water;
+    QMap<QGraphicsPixmapItem *, QGraphicsPixmapItem *> lever;
+    QMap<QGraphicsPixmapItem *, QGraphicsPixmapItem *> pusher;
+    QList<QGraphicsPixmapItem *> object;
+    QList<QGraphicsPixmapItem *> red_diamont;
+    QList<QGraphicsPixmapItem *> blue_diamont;
 
     QTimer m_timer;
+
+    int gravityTimerID;
+    float velocityY;
 
     int direction;
 

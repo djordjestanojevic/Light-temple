@@ -11,7 +11,9 @@ public:
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
-    bool collidesWithBlocks(QList<QGraphicsPixmapItem *> blocks);
+    QGraphicsPixmapItem* collidesWithBlocks(QList<QGraphicsPixmapItem *> blocks);
+
+    bool onGround(QList<QGraphicsPixmapItem *> blocks);
 private:
     QPixmap pixmap;
 };

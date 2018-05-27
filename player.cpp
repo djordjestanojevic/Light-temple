@@ -1,16 +1,17 @@
 #include "player.h"
+#include <iostream>
 
 Player::Player(QGraphicsItem *parent)
     : QGraphicsItem(parent)
 {
-    pixmap = QPixmap("./Images/fireboy").scaled(55, 100);
+    pixmap = QPixmap("./Images/fireboy").scaled(32, 55);
 }
 
 void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     // Iscrtava figuru
     painter->drawPixmap(0,0 /* koordinate centra figure */,
                         pixmap /* Figura */,
-                        0, 0, 55, 100)/* velicina figure */;
+                        0, 0, 32, 55)/* velicina figure */;
     setTransformOriginPoint(boundingRect().center());
     Q_UNUSED(widget);
     Q_UNUSED(option);
@@ -18,14 +19,27 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 }
 
 QRectF Player::boundingRect() const {
-    return QRectF(0,0,55,100);
+    return QRectF(0,0,32,55);
 }
 
-bool Player::collidesWithBlocks(QList<QGraphicsPixmapItem *> blocks) {
+QGraphicsPixmapItem* Player::collidesWithBlocks(QList<QGraphicsPixmapItem *> blocks) {
 
     for(int i = 0; i < blocks.length(); i++) {
         if(collidesWithItem(blocks[i]))
-            return true;
+            return blocks[i];
     }
-    return false;
+    return NULL;
+}
+
+bool Player::onGround(QList<QGraphicsPixmapItem *> blocks) {
+
+    moveBy(0, 1);
+    if(collidesWithBlocks(blocks) != NULL) {
+        moveBy(0, -1);
+        return true;
+    }
+    else {
+        moveBy(0, -1);
+        return false;
+    }
 }

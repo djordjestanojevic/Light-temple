@@ -6,33 +6,50 @@ Level01::Level01(QWidget *parent)
     : QGraphicsScene(0, 0,  1280, 760, parent)
 {
 
-    initPlayField();
-
     direction = 0;
+    velocityY = 0;
+    MakeMap();
+    initPlayers();
+
+    gravityTimerID = startTimer(19);
 
     m_timer.setInterval(20);
     connect(&m_timer, &QTimer::timeout, this, &Level01::movePlayer);
 
 }
 
-void Level01::initPlayField() {
-
-    MakeMap();
+void Level01::initPlayers() {
 
     fireboy = new Player();
-    fireboy->setPos(100, 600);
+    fireboy->setPos(100, 660);
     this->addItem(fireboy);
 
-    std::cout << blocks.length() << std::endl;
-
-    while(!fireboy->collidesWithBlocks(blocks))
+    while(fireboy->collidesWithBlocks(blocks) == NULL) {
         fireboy->moveBy(0, 1);
+    }
+    fireboy->moveBy(0, -1);
+}
+
+
+void Level01::timerEvent(QTimerEvent *event) {
+    if(event->timerId() == gravityTimerID) {
+        velocityY += 0.5;
+        fireboy->moveBy(0, velocityY);
+
+        if(fireboy->collidesWithBlocks(blocks)) {
+            fireboy->moveBy(0, -velocityY);
+            velocityY = 0;
+        }
+
+    }
 }
 
 void Level01::movePlayer() {
 
+    QGraphicsPixmapItem* col = fireboy->collidesWithBlocks(blocks);
     if(direction == 1) {
-        if(fireboy->pos().x() > 1220) {
+        if(fireboy->pos().x() > 1220 && col != NULL) {
+            fireboy->setPos(col->pos().x() - fireboy->boundingRect().width(), fireboy->pos().y());
             m_timer.stop();
             return;
         }
@@ -42,9 +59,9 @@ void Level01::movePlayer() {
     }
 
     if(direction == -1) {
-        std::cout << fireboy->pos().x() << std::endl;
-        if(fireboy->pos().x() < 5) {
-            direction = 0;
+        if(fireboy->pos().x() < 25 && col != NULL) {
+            fireboy->setPos(col->pos().x() + col->boundingRect().width(), fireboy->pos().y());
+            m_timer.stop();
             return;
         }
 
@@ -56,15 +73,22 @@ void Level01::movePlayer() {
 
 void Level01::keyPressEvent(QKeyEvent *event)
 {
+    if(event->isAutoRepeat())
+        return;
+
     switch (event->key()) {
         case Qt::Key_Right:
-            direction = 1;
+            direction += 1;
             m_timer.start();
             break;
         case Qt::Key_Left:
-            direction = -1;
+            direction -= 1;
             m_timer.start();
             break;
+        case Qt::Key_Up:
+            if(fireboy->onGround(blocks)) {
+                velocityY = -9.0;
+            }
         default:
             break;
     }
@@ -72,14 +96,19 @@ void Level01::keyPressEvent(QKeyEvent *event)
 
 void Level01::keyReleaseEvent(QKeyEvent *event)
 {
+    if(event->isAutoRepeat())
+        return;
+
     switch (event->key()) {
         case Qt::Key_Right:
-            direction = 0;
-            m_timer.stop();
+            direction -= 1;
+            if(direction == 0)
+                m_timer.stop();
             break;
         case Qt::Key_Left:
-            direction = 0;
-            m_timer.stop();
+            direction += 1;
+            if(direction == 0)
+                m_timer.stop();
             break;
         default:
             break;
@@ -95,18 +124,37 @@ void Level01::MakeMap() {
     std::ifstream f("./map.txt", std::ifstream::in);
     while(f.is_open())
     {
-        std::cout << "dssd" << std::endl;
         std::string elem;
         int x;
         int y;
         f >> elem >> x >> y;
-        if(elem == "Block")
+
+        if(elem[0] == '/' && elem[1] == '/')
+            continue;
+
+        if(elem == "Block" )
         {
             QGraphicsPixmapItem *block = new QGraphicsPixmapItem;
-            block->setPixmap(QPixmap("./Images/block").scaled(50, 50));
+            block->setPixmap(QPixmap("./Images/block").scaled(30, 30));
             block->setPos(x,y);
             addItem(block);
             blocks.append(block);
+        }
+        else if(elem == "Lava")
+        {
+            QGraphicsPixmapItem *l = new QGraphicsPixmapItem;
+            l->setPixmap(QPixmap("./Images/lava").scaled(30, 29));
+            l->setPos(x,y);
+            addItem(l);
+            lava.append(l);
+        }
+        else if(elem == "Water")
+        {
+            QGraphicsPixmapItem *w = new QGraphicsPixmapItem;
+            w->setPixmap(QPixmap("./Images/water").scaled(30, 25));
+            w->setPos(x,y + 4);
+            addItem(w);
+            water.append(w);
         }
         else
             break;

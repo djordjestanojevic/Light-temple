@@ -4,7 +4,7 @@
 Player::Player(QGraphicsItem *parent)
     : QGraphicsItem(parent)
 {
-    pixmap = QPixmap("./Images/fireboy").scaled(32, 55);
+    pixmap = QPixmap("./Images/fireboy/Idle__000").scaled(32, 55);
 }
 
 void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {

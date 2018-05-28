@@ -11,7 +11,7 @@ Level01::Level01(QWidget *parent)
     MakeMap();
     initPlayers();
 
-    gravityTimerID = startTimer(19);
+    gravityTimerID = startTimer(19.5);
 
     m_timer.setInterval(20);
     connect(&m_timer, &QTimer::timeout, this, &Level01::movePlayer);
@@ -40,32 +40,24 @@ void Level01::timerEvent(QTimerEvent *event) {
             fireboy->moveBy(0, -velocityY);
             velocityY = 0;
         }
-
     }
 }
 
 void Level01::movePlayer() {
 
-    QGraphicsPixmapItem* col = fireboy->collidesWithBlocks(blocks);
     if(direction == 1) {
-        if(fireboy->pos().x() > 1220 && col != NULL) {
-            fireboy->setPos(col->pos().x() - fireboy->boundingRect().width(), fireboy->pos().y());
-            m_timer.stop();
-            return;
-        }
-
         fireboy->moveBy(5, 0);
+        if(fireboy->collidesWithBlocks(blocks)) {
+            fireboy->moveBy(-5, 0);
+        }
 
     }
 
     if(direction == -1) {
-        if(fireboy->pos().x() < 25 && col != NULL) {
-            fireboy->setPos(col->pos().x() + col->boundingRect().width(), fireboy->pos().y());
-            m_timer.stop();
-            return;
-        }
-
         fireboy->moveBy(-5, 0);
+        if(fireboy->collidesWithBlocks(blocks)) {
+            fireboy->moveBy(5, 0);
+        }
 
     }
 

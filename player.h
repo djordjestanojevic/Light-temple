@@ -3,10 +3,11 @@
 
 #include <QGraphicsItem>
 #include <QPainter>
+#include <string>
 
 class Player: public QGraphicsItem {
 public:
-    Player(QGraphicsItem *parent = 0);
+    Player(QString str, QGraphicsItem *parent = 0);
 
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);

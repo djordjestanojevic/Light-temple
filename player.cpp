@@ -1,10 +1,10 @@
 #include "player.h"
 #include <iostream>
 
-Player::Player(QGraphicsItem *parent)
+Player::Player(QString str, QGraphicsItem *parent)
     : QGraphicsItem(parent)
 {
-    pixmap = QPixmap("./Images/fireboy/Idle__000").scaled(32, 55);
+    pixmap = QPixmap(str).scaled(32, 55);
 }
 
 void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {

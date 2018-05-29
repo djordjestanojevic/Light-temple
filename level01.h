@@ -40,15 +40,19 @@ private:
     QList<QGraphicsPixmapItem *> red_diamont;
     QList<QGraphicsPixmapItem *> blue_diamont;
 
-    QTimer m_timer;
+    QTimer timerFireboy;
+    QTimer timerWatergirl;
 
     int gravityTimerID;
-    float velocityY;
 
-    int direction;
+    float velocityFireboy;
+    float velocityWatergirl;
 
+    int directionFireboy;
+    int directionWatergirl;
 
 private slots:
-    void movePlayer();
+    void moveFireboy();
+    void moveWatergirl();
 };
 #endif // LEVEL01_H

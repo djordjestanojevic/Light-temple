@@ -8,13 +8,15 @@ SOURCES += \
     view.cpp \
     level01.cpp \
     settings.cpp \
-    player.cpp
+    player.cpp \
+    levels.cpp
 
 HEADERS += \
     title.h \
     view.h \
     level01.h \
     settings.h \
-    player.h
+    player.h \
+    levels.h
 
 

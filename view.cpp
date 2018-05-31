@@ -11,4 +11,6 @@ View::View(QWidget *parent)
     this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 
     title = new Title(this);
+
+    setScene(title);
 }

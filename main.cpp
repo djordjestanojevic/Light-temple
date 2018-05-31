@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QSplashScreen>
 #include <QTimer>
+#include <QCoreApplication>
 
 #include "view.h"
 
@@ -10,11 +11,12 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     // Postavljamo ikonicu prozora
-    app.setWindowIcon(QIcon("./Images/icon"));
+    QString path = QCoreApplication::applicationDirPath() + "/Images/icon";
+    app.setWindowIcon(QIcon(path));
 
     // Slika koja se prikazuje pri otvaranju aplikacije
     QSplashScreen *splash = new QSplashScreen;
-    splash->setPixmap(QPixmap("./Images/icon"));
+    splash->setPixmap(QPixmap(path));
     splash->show();
 
     // Prikaz pocetnog ekrana

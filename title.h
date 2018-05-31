@@ -8,10 +8,12 @@
 #include <QApplication>
 
 #include "view.h"
-#include "level01.h"
 #include "settings.h"
+#include "levels.h"
 
 class View;
+class Levels;
+class Settings;
 
 class Title: public QGraphicsScene {
     Q_OBJECT
@@ -28,10 +30,15 @@ private:
 
     View *view;
 
+    Levels *levels;
+    Settings *settings;
+
 public slots:
     void startProgram();
     void goToSettings();
     void quitProgram();
+
+    void back();
 };
 
 #endif // TITLE_H

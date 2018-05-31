@@ -12,7 +12,9 @@ public:
     QRectF boundingRect() const;
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 
+    QGraphicsPixmapItem* collidesWithBoxes(QList<QGraphicsPixmapItem *> boxes);
     QGraphicsPixmapItem* collidesWithBlocks(QList<QGraphicsPixmapItem *> blocks);
+    bool collidesWithFluid(QList<QGraphicsPixmapItem *> wf, QList<QGraphicsPixmapItem *> acid);
 
     bool onGround(QList<QGraphicsPixmapItem *> blocks);
 private:

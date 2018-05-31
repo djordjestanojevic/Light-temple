@@ -31,6 +31,32 @@ QGraphicsPixmapItem* Player::collidesWithBlocks(QList<QGraphicsPixmapItem *> blo
     return NULL;
 }
 
+
+QGraphicsPixmapItem* Player::collidesWithBoxes(QList<QGraphicsPixmapItem *> boxes) {
+
+    for(int i = 0; i < boxes.length(); i++) {
+        if(collidesWithItem(boxes[i]))
+            return boxes[i];
+    }
+    return NULL;
+}
+
+bool Player::collidesWithFluid(QList<QGraphicsPixmapItem *> wf, QList<QGraphicsPixmapItem *> acid) {
+
+    for(int i = 0; i < acid.length(); i++) {
+        if(collidesWithItem(acid[i]))
+            return true;
+    }
+
+    for(int i = 0; i < wf.length(); i++) {
+        if(collidesWithItem(wf[i]))
+            return true;
+    }
+
+    return false;
+
+}
+
 bool Player::onGround(QList<QGraphicsPixmapItem *> blocks) {
 
     moveBy(0, 1);

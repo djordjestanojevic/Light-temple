@@ -32,6 +32,7 @@ void Level01::initPlayers() {
     watergirl = new Player(QString(QCoreApplication::applicationDirPath() + "/Images/watergirl"));
     watergirl->setPos(100,570);
     this->addItem(watergirl);
+
     while(watergirl->collidesWithBlocks(blocks) == NULL) {
         watergirl->moveBy(0, 1);
     }
@@ -44,36 +45,56 @@ void Level01::initPlayers() {
     while(fireboy->collidesWithBlocks(blocks) == NULL) {
         fireboy->moveBy(0, 1);
     }
-
     fireboy->moveBy(0, -1);
-
 }
 
 void Level01::timerEvent(QTimerEvent *event) {
     if(event->timerId() == gravityTimerID) {
+        // Gravitacija za fireboy-a
         velocityFireboy += 0.5;
         fireboy->moveBy(0, velocityFireboy);
 
-        velocityWatergirl += 0.5;
-        watergirl->moveBy(0, velocityWatergirl);
-
-        if(fireboy->collidesWithBlocks(blocks)) {
+        if(fireboy->collidesWithBlocks(blocks) || fireboy->collidesWithBoxes(boxes)) {
             fireboy->moveBy(0, -velocityFireboy);
             velocityFireboy = 0;
         }
+
+        // Gravitacija za watrgirl
+        velocityWatergirl += 0.5;
+        watergirl->moveBy(0, velocityWatergirl);
 
         if(watergirl->collidesWithBlocks(blocks)) {
             watergirl->moveBy(0, -velocityWatergirl);
             velocityWatergirl = 0;
         }
 
+        // Gravitacija za box elemente
+        for(int i = 0; i < boxes.length(); i ++) {
+            velocityBox[i] += 0.5;
+            boxes[i]->moveBy(0, velocityBox[i]);
 
+            for(int j = 0; j < blocks.length(); j++) {
+                if(boxes[i] == blocks[j]) {
+                    continue;
+                }
+
+                if(boxes[i]->collidesWithItem(blocks[j])) {
+                    boxes[i]->moveBy(0, -velocityBox[i]);
+                    velocityBox[i] = 0;
+                }
+            }
+        }
+
+
+
+        // Provera da li su dosli do kraja nivoa
         if((fireboy->collidesWithItem(doors[0]) && watergirl->collidesWithItem(doors[1])) ||
-                (fireboy->collidesWithItem(doors[0]) && watergirl->collidesWithItem(doors[1]))) {
+                (fireboy->collidesWithItem(doors[1]) && watergirl->collidesWithItem(doors[0]))) {
 
             levelEnd();
         }
 
+        // Kraj igre u slucaju dodira sa nekom tecnosti
         if(fireboy->collidesWithFluid(acid, water) || watergirl->collidesWithFluid(acid, lava)) {
             gameOver();
         }
@@ -97,6 +118,18 @@ void Level01::moveFireboy() {
             }
         }
 
+        QGraphicsPixmapItem *collidedBox = fireboy->collidesWithBoxes(boxes);
+        if(collidedBox != NULL){
+            collidedBox->moveBy(5, 0);
+            int i;
+            for(i = 0; i < blocks.length(); i++){
+                if(collidedBox->collidesWithItem(blocks[i]) && blocks[i] != collidedBox){
+                    fireboy->moveBy(-5,0);
+                    collidedBox->moveBy(-5, 0);
+                }
+            }
+        }
+
         if(fireboy->collidesWithBlocks(blocks)) {
             fireboy->moveBy(-5, 0);
         }
@@ -104,8 +137,8 @@ void Level01::moveFireboy() {
 
     if(directionFireboy == -1) {
         fireboy->moveBy(-5, 0);
-        }
 
+        // Kolizija fireboy-a sa rucicama pri kretanju u levo
         for(int i = 0; i < levers.length(); i++) {
             bool col = fireboy->collidesWithItem(levers[i].button) && !watergirl->collidesWithItem(levers[i].button);
             if(col && levers[i].buttonPos > 0) {
@@ -118,9 +151,24 @@ void Level01::moveFireboy() {
             }
         }
 
+        QGraphicsPixmapItem *collidedBox = fireboy->collidesWithBoxes(boxes);
+        if(collidedBox != NULL){
+            collidedBox->moveBy(-5, 0);
+            int i;
+            for(i = 0; i < blocks.length(); i++){
+                if(collidedBox->collidesWithItem(blocks[i]) && blocks[i] != collidedBox){
+                    fireboy->moveBy(5, 0);
+                    collidedBox->moveBy(5, 0);
+                }
+            }
+        }
+
         if(fireboy->collidesWithBlocks(blocks)) {
             fireboy->moveBy(5, 0);
+        }
     }
+
+
 }
 
 void Level01::moveWatergirl() {
@@ -137,6 +185,18 @@ void Level01::moveWatergirl() {
             else if(col && levers[i].buttonPos == 30) {
                 watergirl->moveBy(-5, 0);
                 levers[i].onOff = 1;
+            }
+        }
+
+        QGraphicsPixmapItem *collidedBox = watergirl->collidesWithBoxes(boxes);
+        if(collidedBox != NULL){
+            collidedBox->moveBy(5, 0);
+            int i;
+            for(i = 0; i < blocks.length(); i++){
+                if(collidedBox->collidesWithItem(blocks[i]) && blocks[i] != collidedBox){
+                    watergirl->moveBy(-5,0);
+                    collidedBox->moveBy(-5, 0);
+                }
             }
         }
 
@@ -158,6 +218,18 @@ void Level01::moveWatergirl() {
             else if(col && levers[i].buttonPos == 0) {
                 watergirl->moveBy(5, 0);
                 levers[i].onOff = 0;
+            }
+        }
+
+        QGraphicsPixmapItem *collidedBox = watergirl->collidesWithBoxes(boxes);
+        if(collidedBox != NULL){
+            collidedBox->moveBy(-5, 0);
+            int i;
+            for(i = 0; i < blocks.length(); i++){
+                if(collidedBox->collidesWithItem(blocks[i]) && blocks[i] != collidedBox){
+                    watergirl->moveBy(5, 0);
+                    collidedBox->moveBy(5, 0);
+                }
             }
         }
 
@@ -203,7 +275,9 @@ void Level01::moveElevator() {
 
     for(int i = 0; i < levers.length(); i++) {
 
-        if(levers[i].onOff == 1 && levers[i].elevatorPos < 90) {
+        bool elev = fireboy->collidesWithItem(levers[i].elevator) || watergirl->collidesWithItem(levers[i].elevator);
+
+        if(levers[i].onOff == 1 && levers[i].elevatorPos < 90 && !elev) {
 
             levers[i].elevator->moveBy(0, 1);
             levers[i].elevatorPos++;
@@ -356,6 +430,15 @@ void Level01::MakeMap(QString str) {
             addItem(w);
             water.append(w);
         }
+        else if(elem == "Acid")
+        {
+            QGraphicsPixmapItem *w = new QGraphicsPixmapItem;
+            path = QCoreApplication::applicationDirPath() + "/Images/acid";
+            w->setPixmap(QPixmap(path).scaled(30, 25));
+            w->setPos(x,y + 4);
+            addItem(w);
+            acid.append(w);
+        }
         else if(elem == "Door") {
             QGraphicsPixmapItem *w = new QGraphicsPixmapItem;
             path = QCoreApplication::applicationDirPath() + "/Images/doors";
@@ -421,6 +504,19 @@ void Level01::MakeMap(QString str) {
 
             levers.append(l);
         }
+        else if(elem == "Box")
+        {
+            QGraphicsPixmapItem *w = new QGraphicsPixmapItem;
+            path = QCoreApplication::applicationDirPath() + "/Images/box";
+            w->setPixmap(QPixmap(path).scaled(30, 30));
+            w->setPos(x,y-4);
+            addItem(w);
+
+            boxPosition.append(QPointF(x,y-4));
+            velocityBox.append(0);
+            blocks.append(w);
+            boxes.append(w);
+        }
         else
             break;
     }
@@ -452,9 +548,9 @@ void Level01::levelEnd() {
     connect(nextLevel, SIGNAL(clicked()), levels, SLOT(nextLevel()));
     connect(nextLevel, SIGNAL(clicked()), endWindow, SLOT(close()));
     connect(exitToManu, SIGNAL(clicked()), levels, SLOT(exitLevel()));
-    connect(exitToManu, SIGNAL(clicked()), exitToManu, SLOT(close()));
+    connect(exitToManu, SIGNAL(clicked()), endWindow, SLOT(close()));
     connect(repeatThisLevel, SIGNAL(clicked()), this, SLOT(repeatLevel()));
-    connect(repeatThisLevel, SIGNAL(clicked()), exitToManu, SLOT(close()));
+    connect(repeatThisLevel, SIGNAL(clicked()), endWindow, SLOT(close()));
 
     endWindow->show();
 
@@ -520,60 +616,54 @@ void Level01::repeatLevel() {
 
         levers[i].onOff = 0;
     }
+
+    for(int i = 0; i < boxes.length(); i++) {
+        boxes[i]->setPos(boxPosition[i]);
+    }
 }
 
 void Level01::pause() {
-    if(pauseOnOff == 0) {
+    gravityTimerID--;
+    disconnect(&timerFireboy, &QTimer::timeout, this, &Level01::moveFireboy);
+    disconnect(&timerWatergirl, &QTimer::timeout, this, &Level01::moveWatergirl);
+    disconnect(&timerElevator, &QTimer::timeout, this, &Level01::moveElevator);
 
-        pauseOnOff = 1;
+    endWindow = new QWidget();
+    endWindow->setFixedSize(400, 400);
 
-        gravityTimerID--;
-        disconnect(&timerFireboy, &QTimer::timeout, this, &Level01::moveFireboy);
-        disconnect(&timerWatergirl, &QTimer::timeout, this, &Level01::moveWatergirl);
-        disconnect(&timerElevator, &QTimer::timeout, this, &Level01::moveElevator);
+    endWindow->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 
-        endWindow = new QWidget();
-        endWindow->setFixedSize(400, 400);
+    QHBoxLayout *layout = new QHBoxLayout();
 
-        endWindow->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    repeatThisLevel = new QPushButton("Repeat level", endWindow);
+    layout->addWidget(repeatThisLevel);
 
-        QHBoxLayout *layout = new QHBoxLayout();
+    exitToManu = new QPushButton("Exit", endWindow);
+    layout->addWidget(exitToManu);
 
-        repeatThisLevel = new QPushButton("Repeat level", endWindow);
-        layout->addWidget(repeatThisLevel);
+    resume = new QPushButton("Resume", endWindow);
+    layout->addWidget(resume);
 
-        exitToManu = new QPushButton("Exit", endWindow);
-        layout->addWidget(exitToManu);
+    endWindow->setLayout(layout);
 
-        resume = new QPushButton("Resume", endWindow);
-        layout->addWidget(resume);
+    endWindow->show();
+    connect(repeatThisLevel, SIGNAL(clicked()), this, SLOT(repeatLevel()));
+    connect(repeatThisLevel, SIGNAL(clicked()), endWindow, SLOT(close()));
 
-        endWindow->setLayout(layout);
+    connect(exitToManu, SIGNAL(clicked()), levels, SLOT(exitLevel()));
+    connect(exitToManu, SIGNAL(clicked()), endWindow, SLOT(close()));
 
-        connect(repeatThisLevel, SIGNAL(clicked()), this, SLOT(repeatLevel()));
-        connect(repeatThisLevel, SIGNAL(clicked()), endWindow, SLOT(close()));
+    connect(resume, SIGNAL(clicked()), this, SLOT(resumeLevel()));
+    connect(resume, SIGNAL(clicked()), endWindow, SLOT(close()));
 
-        connect(exitToManu, SIGNAL(clicked()), levels, SLOT(exitLevel()));
-        connect(exitToManu, SIGNAL(clicked()), endWindow, SLOT(close()));
-
-        connect(resume, SIGNAL(clicked()), this, SLOT(resumeLevel()));
-        connect(resume, SIGNAL(clicked()), endWindow, SLOT(close()));
-
-        endWindow->show();
-    }
-    else {
-        pauseOnOff = 0;
-
-        gravityTimerID++;
-        connect(&timerFireboy, &QTimer::timeout, this, &Level01::moveFireboy);
-        connect(&timerWatergirl, &QTimer::timeout, this, &Level01::moveWatergirl);
-        connect(&timerElevator, &QTimer::timeout, this, &Level01::moveElevator);
-
-        endWindow->close();
-    }
 }
 
 void Level01::resumeLevel() {
 
-    pause();
+    gravityTimerID++;
+    connect(&timerFireboy, &QTimer::timeout, this, &Level01::moveFireboy);
+    connect(&timerWatergirl, &QTimer::timeout, this, &Level01::moveWatergirl);
+    connect(&timerElevator, &QTimer::timeout, this, &Level01::moveElevator);
+
+    endWindow->close();
 }

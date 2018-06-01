@@ -11,6 +11,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <vector>
 
 #include "player.h"
 
@@ -65,10 +66,12 @@ private:
     QList<QGraphicsPixmapItem *> acid;
     QList<lever> levers;
     QList<pusher> pushers;
-    QList<QGraphicsPixmapItem *> object;
+    QList<QGraphicsPixmapItem *> boxes;
     QList<QGraphicsPixmapItem *> red_diamont;
     QList<QGraphicsPixmapItem *> blue_diamont;
     QList<QGraphicsPixmapItem *> doors;
+
+    QList<QPointF> boxPosition;
 
     QTimer timerFireboy;
     QTimer timerWatergirl;
@@ -79,6 +82,7 @@ private:
 
     float velocityFireboy;
     float velocityWatergirl;
+    QList<float> velocityBox;
 
     int directionFireboy;
     int directionWatergirl;

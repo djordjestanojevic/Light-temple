@@ -13,38 +13,44 @@ Title::Title(View *v, QWidget *parent)
     this->setSceneRect(0,0,1280,760);
 
     // Dodajemo pozadinu
-    QString path = QCoreApplication::applicationDirPath() + "/Images/background";
-    background = new QGraphicsPixmapItem(QPixmap(path).scaled(1280, 760));
+    QString path = QCoreApplication::applicationDirPath() + "/Images/title/background";
+    background = new QGraphicsPixmapItem(QPixmap(path).scaled(1380, 760));
     addItem(background);
 
     // Dodajemo logo
     path = QCoreApplication::applicationDirPath() + "/Images/icon";
     logo = new QGraphicsPixmapItem(QPixmap(path));
     logo->setScale(0.5);
-    logo->setPos(this->width()/2 - 142, this->height()/2 - 120);
+    logo->setPos(this->width()/2 - 142, this->height()/2 - 300);
     addItem(logo);
 
     // Postavljamo dugme za start igre
     startButton = new QPushButton("", view);
-    startButton->setFlat(true);
-    startButton->setToolTip("Click to start");
-    startButton->setGeometry(QRect(this->width()/2 - 50, this->height()/2 + 100, 100, 32));
-    startButton->setIcon(QIcon(path));
-    startButton->setIconSize(QSize(200,50));
+    path = QCoreApplication::applicationDirPath() + "/Images/title/start2";
+    startButton->setGeometry(QRect(QPoint(this->width()/2 - 125, this->height()/2 - 40), QSize(0, 0)));
+    startButton->setFixedSize(220, 80);
+    startButton->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; background: none; font-size: 30px;}" +
+                                   "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     connect(startButton, SIGNAL(clicked()), this, SLOT(startProgram()));
     levels = new Levels(view, this);
 
     // Postavljamo dugme za ulaz u podesavanja
-    settingsButton = new QPushButton("Settings", view);
-    settingsButton->setToolTip("Open settings");
-    settingsButton->setGeometry(QRect(this->width()/2 - 50, this->height()/2 + 150, 100, 32));
+    settingsButton = new QPushButton("", view);
+    path = QCoreApplication::applicationDirPath() + "/Images/title/settings2";
+    settingsButton->setGeometry(QRect(QPoint(this->width()/2 - 125, this->height()/2 + 35), QSize(0, 0)));
+    settingsButton->setFixedSize(220, 80);
+    settingsButton->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; background: none; font-size: 30px;}" +
+                                   "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     connect(settingsButton, SIGNAL(clicked()), this, SLOT(goToSettings()));
     settings = new Settings(view, this);
 
     // Postavljamo dugme za izlaz iz igre
-    quitButton = new QPushButton("Quit", view);
-    quitButton->setToolTip("Quit program");
-    quitButton->setGeometry(QRect(this->width()/2 - 50, this->height()/2 + 200, 100, 32));
+    quitButton = new QPushButton("", view);
+    path = QCoreApplication::applicationDirPath() + "/Images/title/exit2";
+    quitButton->setGeometry(QRect(QPoint(this->width()/2 - 125, this->height()/2 + 110), QSize(0, 0)));
+    quitButton->setFixedSize(220, 80);
+    quitButton->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; background: none; font-size: 30px;}" +
+                                   "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     connect(quitButton, SIGNAL(clicked()), this, SLOT(quitProgram()));
 }
 

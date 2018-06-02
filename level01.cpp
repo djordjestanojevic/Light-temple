@@ -26,6 +26,11 @@ Level01::Level01(QString str, Levels *l, QWidget *parent)
     timerElevator.setInterval(20);
     connect(&timerElevator, &QTimer::timeout, this, &Level01::moveElevator);
     timerElevator.start();
+
+    timerCount = 0;
+    timer.setInterval(1000);
+    connect(&timer, QTimer::timeout, this, &Level01::timerFunc);
+    timer.start();
 }
 
 void Level01::initPlayers() {
@@ -169,6 +174,23 @@ void Level01::moveFireboy() {
     }
 
 
+    QGraphicsPixmapItem * diamond;
+    if(fireboy->collidesWithDiamonds(diamonds)){
+        diamond=fireboy->collidesWithDiamonds(diamonds);
+        diamond->hide();
+        numOfDiamonds+=1;
+    }
+
+
+    QGraphicsPixmapItem * redGem;
+    if(fireboy->collidesWithRedGems(redGems)){
+        redGem=fireboy->collidesWithDiamonds(redGems);
+        redGem->hide();
+        numOfRedGems+=1;
+    }
+
+
+
 }
 
 void Level01::moveWatergirl() {
@@ -237,6 +259,21 @@ void Level01::moveWatergirl() {
             watergirl->moveBy(5, 0);
         }
 
+    }
+
+
+    QGraphicsPixmapItem * diamond;
+    if(watergirl->collidesWithDiamonds(diamonds)){
+        diamond=watergirl->collidesWithDiamonds(diamonds);
+        diamond->hide();
+        numOfDiamonds+=1;
+    }
+
+    QGraphicsPixmapItem * blueGem;
+    if(watergirl->collidesWithBlueGems(blueGems)){
+        blueGem=watergirl->collidesWithBlueGems(blueGems);
+        blueGem->hide();
+        numOfBlueGems+=1;
     }
 
 }
@@ -412,6 +449,15 @@ void Level01::MakeMap(QString str) {
             addItem(block);
             blocks.append(block);
         }
+        else if(elem == "BlockCut")
+        {
+            QGraphicsPixmapItem *l = new QGraphicsPixmapItem;
+            path = QCoreApplication::applicationDirPath() + "/Images/blockCut";
+            l->setPixmap(QPixmap(path).scaled(30, 10));
+            l->setPos(x,y);
+            addItem(l);
+            blocks.append(l);
+        }
         else if(elem == "Lava")
         {
             QGraphicsPixmapItem *l = new QGraphicsPixmapItem;
@@ -426,7 +472,7 @@ void Level01::MakeMap(QString str) {
             QGraphicsPixmapItem *w = new QGraphicsPixmapItem;
             path = QCoreApplication::applicationDirPath() + "/Images/water";
             w->setPixmap(QPixmap(path).scaled(30, 25));
-            w->setPos(x,y + 4);
+            w->setPos(x,y + 1);
             addItem(w);
             water.append(w);
         }
@@ -517,9 +563,44 @@ void Level01::MakeMap(QString str) {
             blocks.append(w);
             boxes.append(w);
         }
+        else if(elem == "Diamond")
+        {
+            QGraphicsPixmapItem *w = new QGraphicsPixmapItem;
+            path = QCoreApplication::applicationDirPath() + "/Images/diamond";
+            w->setPixmap(QPixmap(path).scaled(60, 30));
+            w->setPos(x,y-4);
+            addItem(w);
+            diamonds.append(w);
+        }
+        else if(elem == "BlueGem")
+        {
+            QGraphicsPixmapItem *w = new QGraphicsPixmapItem;
+            path = QCoreApplication::applicationDirPath() + "/Images/bluegem";
+            w->setPixmap(QPixmap(path).scaled(30, 30));
+            w->setPos(x,y-4);
+            addItem(w);
+            blueGems.append(w);
+        }
+        else if(elem == "RedGem")
+        {
+            QGraphicsPixmapItem *w = new QGraphicsPixmapItem;
+            path = QCoreApplication::applicationDirPath() + "/Images/redgem";
+            w->setPixmap(QPixmap(path).scaled(30, 25));
+            w->setPos(x,y-4);
+            addItem(w);
+            redGems.append(w);
+        }
         else
             break;
     }
+
+
+    pauseGame = new QPushButton("00:00");
+    pauseGame->setGeometry(QRect(this->width()/2 - 50, 0, 100, 30));
+    pauseGame->setStyleSheet("border: 1px solid #000000; background: rgb(139,69,19); font-size: 22px; font-family: cursive; border-radius: 5px;");
+    addWidget(pauseGame);
+    connect(pauseGame, SIGNAL(clicked()), SLOT(pauseOnTimer()));
+
 }
 
 void Level01::levelEnd() {
@@ -527,20 +608,38 @@ void Level01::levelEnd() {
     disconnect(&timerFireboy, &QTimer::timeout, this, &Level01::moveFireboy);
     disconnect(&timerWatergirl, &QTimer::timeout, this, &Level01::moveWatergirl);
     disconnect(&timerElevator, &QTimer::timeout, this, &Level01::moveElevator);
+    timer.stop();
 
     endWindow = new QWidget();
+    endWindow->setFixedSize(450, 400);QString path = QCoreApplication::applicationDirPath() + "/Images/levelFinished/";
+    endWindow->setStyleSheet("border-image: url(" + path + "background" + ") 0 0 0 0 stretch stretch; background-image: url(" + path + "bg" + "); border-width: 0px; background-position: center;");
+
     endWindow->setFixedSize(400, 400);
     endWindow->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 
     QHBoxLayout *layout = new QHBoxLayout();
+    layout->setSpacing(50);
+    layout->setContentsMargins(50, 200, 50, 50);
 
     nextLevel = new QPushButton("Next level", endWindow);
+    path = QCoreApplication::applicationDirPath() + "/Images/levelFinished/next";
+    nextLevel->setFixedSize(80, 80);
+    nextLevel->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; background: none;}" +
+                                   "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     layout->addWidget(nextLevel);
 
     exitToManu = new QPushButton("Exit", endWindow);
+    path = QCoreApplication::applicationDirPath() + "/Images/levelFinished/menu";
+    exitToManu->setFixedSize(80, 80);
+    exitToManu->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; background: none;}" +
+                                   "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     layout->addWidget(exitToManu);
 
     repeatThisLevel = new QPushButton("Repeat level", endWindow);
+    path = QCoreApplication::applicationDirPath() + "/Images/levelFinished/restart";
+    repeatThisLevel->setFixedSize(80, 80);
+    repeatThisLevel->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; background: none;}" +
+                                   "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     layout->addWidget(repeatThisLevel);
 
     endWindow->setLayout(layout);
@@ -561,17 +660,30 @@ void Level01::gameOver() {
     disconnect(&timerFireboy, &QTimer::timeout, this, &Level01::moveFireboy);
     disconnect(&timerWatergirl, &QTimer::timeout, this, &Level01::moveWatergirl);
     disconnect(&timerElevator, &QTimer::timeout, this, &Level01::moveElevator);
+    timer.stop();
 
     endWindow = new QWidget();
-    endWindow->setFixedSize(400, 400);
+    endWindow->setFixedSize(450, 400);QString path = QCoreApplication::applicationDirPath() + "/Images/gameOver/";
+    endWindow->setStyleSheet("border-image: url(" + path + "background" + ") 0 0 0 0 stretch stretch; background-image: url(" + path + "bg" + "); border-width: 0px; background-position: center;");
+
     endWindow->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 
     QHBoxLayout *layout = new QHBoxLayout();
+    layout->setSpacing(50);
+    layout->setContentsMargins(50, 200, 50, 50);
 
-    repeatThisLevel = new QPushButton("Repeat level", endWindow);
+    repeatThisLevel = new QPushButton("", endWindow);
+    path = QCoreApplication::applicationDirPath() + "/Images/gameOver/restart";
+    repeatThisLevel->setFixedSize(80, 80);
+    repeatThisLevel->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; background: none;}" +
+                                   "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     layout->addWidget(repeatThisLevel);
 
-    exitToManu = new QPushButton("Exit", endWindow);
+    exitToManu = new QPushButton("", endWindow);
+    path = QCoreApplication::applicationDirPath() + "/Images/gameOver/menu";
+    exitToManu->setFixedSize(80, 80);
+    exitToManu->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; background: none;}" +
+                                   "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     layout->addWidget(exitToManu);
 
     endWindow->setLayout(layout);
@@ -620,6 +732,24 @@ void Level01::repeatLevel() {
     for(int i = 0; i < boxes.length(); i++) {
         boxes[i]->setPos(boxPosition[i]);
     }
+
+    pauseGame->setText("00:00");
+    timerCount = 0;
+    timer.start();
+
+
+    for(int i = 0; i < blueGems.length(); i++) {
+       blueGems[i]->show();
+    }
+    for(int i = 0; i < redGems.length(); i++) {
+       redGems[i]->show();
+    }
+    for(int i = 0; i < diamonds.length(); i++) {
+       diamonds[i]->show();
+    }
+    numOfDiamonds=0;
+    numOfRedGems=0;
+    numOfBlueGems=0;
 }
 
 void Level01::pause() {
@@ -627,21 +757,38 @@ void Level01::pause() {
     disconnect(&timerFireboy, &QTimer::timeout, this, &Level01::moveFireboy);
     disconnect(&timerWatergirl, &QTimer::timeout, this, &Level01::moveWatergirl);
     disconnect(&timerElevator, &QTimer::timeout, this, &Level01::moveElevator);
+    timer.stop();
 
     endWindow = new QWidget();
-    endWindow->setFixedSize(400, 400);
+    endWindow->setFixedSize(500, 400);
+    QString path = QCoreApplication::applicationDirPath() + "/Images/pause/";
+    endWindow->setStyleSheet("border-image: url(" + path + "background" + ") 0 0 0 0 stretch stretch; background-image: url(" + path + "bg" + "); border-width: 0px; background-position: center;");
 
     endWindow->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 
     QHBoxLayout *layout = new QHBoxLayout();
+    layout->setSpacing(50);
+    layout->setContentsMargins(50, 200, 50, 50);
 
-    repeatThisLevel = new QPushButton("Repeat level", endWindow);
+    repeatThisLevel = new QPushButton("", endWindow);
+    path = QCoreApplication::applicationDirPath() + "/Images/pause/restart";
+    repeatThisLevel->setFixedSize(80, 80);
+    repeatThisLevel->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; background: none;}" +
+                                   "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     layout->addWidget(repeatThisLevel);
 
-    exitToManu = new QPushButton("Exit", endWindow);
+    exitToManu = new QPushButton("", endWindow);
+    path = QCoreApplication::applicationDirPath() + "/Images/pause/menu";
+    exitToManu->setFixedSize(80, 80);
+    exitToManu->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; background: none;}" +
+                                   "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     layout->addWidget(exitToManu);
 
-    resume = new QPushButton("Resume", endWindow);
+    resume = new QPushButton("", endWindow);
+    path = QCoreApplication::applicationDirPath() + "/Images/pause/play";
+    resume->setFixedSize(80, 80);
+    resume->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; background: none;}" +
+                                   "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     layout->addWidget(resume);
 
     endWindow->setLayout(layout);
@@ -664,6 +811,26 @@ void Level01::resumeLevel() {
     connect(&timerFireboy, &QTimer::timeout, this, &Level01::moveFireboy);
     connect(&timerWatergirl, &QTimer::timeout, this, &Level01::moveWatergirl);
     connect(&timerElevator, &QTimer::timeout, this, &Level01::moveElevator);
+    timer.start();
 
     endWindow->close();
+}
+
+void Level01::timerFunc() {
+    timerCount++;
+    QString s = "";
+    if(timerCount/60 < 10)
+        s.append("0");
+    s.append(QString::number(timerCount/60));
+    s.append(":");
+    if(timerCount%60 < 10)
+        s.append("0");
+    s.append(QString::number(timerCount%60));
+
+    pauseGame->setText(s);
+
+}
+
+void Level01::pauseOnTimer() {
+    pause();
 }

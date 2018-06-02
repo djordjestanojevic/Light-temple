@@ -19,7 +19,7 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 }
 
 QRectF Player::boundingRect() const {
-    return QRectF(0,0,32,55);
+    return QRectF(0,5,32,50);
 }
 
 QGraphicsPixmapItem* Player::collidesWithBlocks(QList<QGraphicsPixmapItem *> blocks) {
@@ -69,3 +69,33 @@ bool Player::onGround(QList<QGraphicsPixmapItem *> blocks) {
         return false;
     }
 }
+
+
+QGraphicsPixmapItem* Player::collidesWithRedGems(QList<QGraphicsPixmapItem *> redGems){
+
+    for(int i = 0; i < redGems.length(); i++) {
+        if(collidesWithItem(redGems[i]))
+            return redGems[i];
+    }
+    return NULL;
+
+}
+QGraphicsPixmapItem* Player::collidesWithBlueGems(QList<QGraphicsPixmapItem *> blueGems){
+
+    for(int i = 0; i < blueGems.length(); i++) {
+        if(collidesWithItem(blueGems[i]))
+            return blueGems[i];
+    }
+    return NULL;
+}
+
+
+QGraphicsPixmapItem* Player::collidesWithDiamonds(QList<QGraphicsPixmapItem *> diamonds) {
+
+    for(int i = 0; i < diamonds.length(); i++) {
+        if(collidesWithItem(diamonds[i]))
+            return diamonds[i];
+    }
+    return NULL;
+}
+

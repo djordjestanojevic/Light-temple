@@ -67,8 +67,9 @@ private:
     QList<lever> levers;
     QList<pusher> pushers;
     QList<QGraphicsPixmapItem *> boxes;
-    QList<QGraphicsPixmapItem *> red_diamont;
-    QList<QGraphicsPixmapItem *> blue_diamont;
+    QList<QGraphicsPixmapItem *> diamonds;
+    QList<QGraphicsPixmapItem *> redGems;
+    QList<QGraphicsPixmapItem *> blueGems;
     QList<QGraphicsPixmapItem *> doors;
 
     QList<QPointF> boxPosition;
@@ -92,11 +93,23 @@ private:
     QPushButton *repeatThisLevel;
     QPushButton *resume;
 
+    QPushButton *pauseGame;
+
+    QTimer timer;
+    void timerFunc();
+    int timerCount;
+
+
+    int numOfDiamonds;
+    int numOfRedGems;
+    int numOfBlueGems;
+
 private slots:
     void moveFireboy();
     void moveWatergirl();
     void repeatLevel();
     void resumeLevel();
     void moveElevator();
+    void pauseOnTimer();
 };
 #endif // LEVEL01_H

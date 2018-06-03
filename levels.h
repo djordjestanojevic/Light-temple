@@ -6,6 +6,9 @@
 #include <QApplication>
 #include <QGraphicsView>
 
+#include <fstream>
+#include <string>
+
 #include "view.h"
 #include "level01.h"
 
@@ -19,8 +22,12 @@ public:
 
     QPushButton * mainMenu;
 
-    QPushButton *button01;
+    QPushButton *button[5];
 
+
+    static int currentLevel;
+    static int lastUnlocked;
+    static int levelStars[5];
 
 
 private:
@@ -30,7 +37,11 @@ private:
     Title *title;
 
 public slots:
-    void startProgram();
+    void startLevel1();
+    void startLevel2();
+    void startLevel3();
+    void startLevel4();
+    void startLevel5();
     void nextLevel();
     void exitLevel();
 };

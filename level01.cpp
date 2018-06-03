@@ -1,16 +1,21 @@
 #include "level01.h"
-
 #include "settings.h"
+
 Level01::Level01(QString str, Levels *l, QWidget *parent)
     : QGraphicsScene(0, 0,  1280, 760, parent),
       pauseOnOff(0)
 {
+    std::cout << Levels::levelStars[Levels::currentLevel - 1] << std::endl;
     levels = l;
     directionFireboy = 0;
     directionWatergirl = 0;
 
     velocityFireboy = 0;
     velocityWatergirl = 0;
+
+    numOfDiamonds = 2;
+    numOfBlueGems = 3;
+    numOfRedGems = 3;
 
     MakeMap(str);
     initPlayers();
@@ -29,7 +34,7 @@ Level01::Level01(QString str, Levels *l, QWidget *parent)
 
     timerCount = 0;
     timer.setInterval(1000);
-    connect(&timer, QTimer::timeout, this, &Level01::timerFunc);
+    connect(&timer, &QTimer::timeout, this, &Level01::timerFunc);
     timer.start();
 }
 
@@ -38,19 +43,19 @@ void Level01::initPlayers() {
     watergirl->setPos(100,570);
     this->addItem(watergirl);
 
-    while(watergirl->collidesWithBlocks(blocks) == NULL) {
-        watergirl->moveBy(0, 1);
+    while(watergirl->collidesWithBlocks(blocks) != NULL) {
+        watergirl->moveBy(0, -1);
     }
-    watergirl->moveBy(0, -1);
 
     fireboy = new Player(QString(QCoreApplication::applicationDirPath() + "/Images/fireboy"));
     fireboy->setPos(100, 660);
     this->addItem(fireboy);
 
-    while(fireboy->collidesWithBlocks(blocks) == NULL) {
-        fireboy->moveBy(0, 1);
+    while(fireboy->collidesWithBlocks(blocks) != NULL) {
+        fireboy->moveBy(0, -1);
     }
-    fireboy->moveBy(0, -1);
+
+
 }
 
 void Level01::timerEvent(QTimerEvent *event) {
@@ -103,6 +108,43 @@ void Level01::timerEvent(QTimerEvent *event) {
         if(fireboy->collidesWithFluid(acid, water) || watergirl->collidesWithFluid(acid, lava)) {
             gameOver();
         }
+
+        QGraphicsPixmapItem * diamond;
+        QGraphicsPixmapItem * blueGem;
+        QGraphicsPixmapItem * redGem;
+
+        if(watergirl->collidesWithDiamonds(diamonds)){
+            diamond = watergirl->collidesWithDiamonds(diamonds);
+            if(diamond->isVisible()){
+                diamond->hide();
+                numOfDiamonds -= 1;
+            }
+        }
+
+        if(watergirl->collidesWithBlueGems(blueGems)){
+            blueGem=watergirl->collidesWithBlueGems(blueGems);
+            if(blueGem->isVisible()){
+                blueGem->hide();
+                numOfBlueGems-=1;
+            }
+        }
+
+        if(fireboy->collidesWithDiamonds(diamonds)){
+            diamond = fireboy->collidesWithDiamonds(diamonds);
+            if(diamond->isVisible()){
+                numOfDiamonds -= 1;
+                diamond->hide();
+            }
+        }
+
+        if(fireboy->collidesWithRedGems(redGems)){
+            redGem = fireboy->collidesWithRedGems(redGems);
+            if(redGem->isVisible()){
+                redGem->hide();
+                numOfRedGems -= 1;
+            }
+        }
+
     }
 }
 
@@ -128,7 +170,7 @@ void Level01::moveFireboy() {
             collidedBox->moveBy(5, 0);
             int i;
             for(i = 0; i < blocks.length(); i++){
-                if(collidedBox->collidesWithItem(blocks[i]) && blocks[i] != collidedBox){
+                if((collidedBox->collidesWithItem(blocks[i]) && blocks[i] != collidedBox) || watergirl->collidesWithBoxes(boxes) != NULL){
                     fireboy->moveBy(-5,0);
                     collidedBox->moveBy(-5, 0);
                 }
@@ -161,7 +203,7 @@ void Level01::moveFireboy() {
             collidedBox->moveBy(-5, 0);
             int i;
             for(i = 0; i < blocks.length(); i++){
-                if(collidedBox->collidesWithItem(blocks[i]) && blocks[i] != collidedBox){
+                if((collidedBox->collidesWithItem(blocks[i]) && blocks[i] != collidedBox) || watergirl->collidesWithBoxes(boxes) != NULL){
                     fireboy->moveBy(5, 0);
                     collidedBox->moveBy(5, 0);
                 }
@@ -176,20 +218,22 @@ void Level01::moveFireboy() {
 
     QGraphicsPixmapItem * diamond;
     if(fireboy->collidesWithDiamonds(diamonds)){
-        diamond=fireboy->collidesWithDiamonds(diamonds);
-        diamond->hide();
-        numOfDiamonds+=1;
+        diamond = fireboy->collidesWithDiamonds(diamonds);
+        if(diamond->isVisible()){
+            numOfDiamonds -= 1;
+            diamond->hide();
+        }
     }
 
 
     QGraphicsPixmapItem * redGem;
     if(fireboy->collidesWithRedGems(redGems)){
-        redGem=fireboy->collidesWithDiamonds(redGems);
-        redGem->hide();
-        numOfRedGems+=1;
+        redGem = fireboy->collidesWithRedGems(redGems);
+        if(redGem->isVisible()){
+            redGem->hide();
+            numOfRedGems -= 1;
+        }
     }
-
-
 
 }
 
@@ -215,7 +259,7 @@ void Level01::moveWatergirl() {
             collidedBox->moveBy(5, 0);
             int i;
             for(i = 0; i < blocks.length(); i++){
-                if(collidedBox->collidesWithItem(blocks[i]) && blocks[i] != collidedBox){
+                if((collidedBox->collidesWithItem(blocks[i]) && blocks[i] != collidedBox) || fireboy->collidesWithBoxes(boxes) != NULL){
                     watergirl->moveBy(-5,0);
                     collidedBox->moveBy(-5, 0);
                 }
@@ -248,7 +292,7 @@ void Level01::moveWatergirl() {
             collidedBox->moveBy(-5, 0);
             int i;
             for(i = 0; i < blocks.length(); i++){
-                if(collidedBox->collidesWithItem(blocks[i]) && blocks[i] != collidedBox){
+                if((collidedBox->collidesWithItem(blocks[i]) && blocks[i] != collidedBox) || fireboy->collidesWithBoxes(boxes) != NULL){
                     watergirl->moveBy(5, 0);
                     collidedBox->moveBy(5, 0);
                 }
@@ -264,16 +308,20 @@ void Level01::moveWatergirl() {
 
     QGraphicsPixmapItem * diamond;
     if(watergirl->collidesWithDiamonds(diamonds)){
-        diamond=watergirl->collidesWithDiamonds(diamonds);
-        diamond->hide();
-        numOfDiamonds+=1;
+        diamond = watergirl->collidesWithDiamonds(diamonds);
+        if(diamond->isVisible()){
+            diamond->hide();
+            numOfDiamonds -= 1;
+        }
     }
 
     QGraphicsPixmapItem * blueGem;
     if(watergirl->collidesWithBlueGems(blueGems)){
         blueGem=watergirl->collidesWithBlueGems(blueGems);
-        blueGem->hide();
-        numOfBlueGems+=1;
+        if(blueGem->isVisible()){
+            blueGem->hide();
+            numOfBlueGems-=1;
+        }
     }
 
 }
@@ -291,10 +339,13 @@ void Level01::moveElevator() {
 
             pushers[i].elevator->moveBy(0, 1);
             pushers[i].pos++;
+            if(fireboy->collidesWithItem(pushers[i].elevator) || watergirl->collidesWithItem(pushers[i].elevator)) {
+                pushers[i].elevator->moveBy(0, -1);
+                pushers[i].pos--;
+            }
         }
         else if(!(but1 || but2) && pushers[i].pos > 0) {
             pushers[i].elevator->moveBy(0, -1);
-
 
             if(fireboy->collidesWithItem(pushers[i].elevator))
                 fireboy->moveBy(0, -1);
@@ -302,9 +353,21 @@ void Level01::moveElevator() {
             if(watergirl->collidesWithItem(pushers[i].elevator))
                 watergirl->moveBy(0, -1);
 
-
-
             pushers[i].pos--;
+
+            QGraphicsPixmapItem *tmp1 = fireboy->collidesWithBlocks(blocks);
+            QGraphicsPixmapItem *tmp2 = watergirl->collidesWithBlocks(blocks);
+            if((tmp1 != NULL && tmp1 != pushers[i].elevator) || (tmp2 != NULL && tmp2 != pushers[i].elevator)) {
+                pushers[i].elevator->moveBy(0, 1);
+
+                if(tmp1 != NULL)
+                    fireboy->moveBy(0, 1);
+
+                if(tmp2 != NULL)
+                    watergirl->moveBy(0, 1);
+
+                pushers[i].pos++;
+            }
         }
 
 
@@ -318,6 +381,10 @@ void Level01::moveElevator() {
 
             levers[i].elevator->moveBy(0, 1);
             levers[i].elevatorPos++;
+            if(fireboy->collidesWithItem(levers[i].elevator) || watergirl->collidesWithItem(levers[i].elevator)) {
+                levers[i].elevator->moveBy(0, -1);
+                levers[i].elevatorPos--;
+            }
         }
         else if(levers[i].onOff == 0 && levers[i].elevatorPos > 0) {
             levers[i].elevator->moveBy(0, -1);
@@ -330,6 +397,20 @@ void Level01::moveElevator() {
                 watergirl->moveBy(0, -1);
 
             levers[i].elevatorPos--;
+
+            QGraphicsPixmapItem *tmp1 = fireboy->collidesWithBlocks(blocks);
+            QGraphicsPixmapItem *tmp2 = watergirl->collidesWithBlocks(blocks);
+            if((tmp1 != NULL && tmp1 != levers[i].elevator) || (tmp2 != NULL && tmp2 != levers[i].elevator)) {
+                pushers[i].elevator->moveBy(0, 1);
+
+                if(tmp1 != NULL)
+                    fireboy->moveBy(0, 1);
+
+                if(tmp2 != NULL)
+                    watergirl->moveBy(0, 1);
+
+                levers[i].elevatorPos++;
+            }
         }
 
         if(levers[i].onOff == 1 && levers[i].buttonPos < 30) {
@@ -463,7 +544,7 @@ void Level01::MakeMap(QString str) {
             QGraphicsPixmapItem *l = new QGraphicsPixmapItem;
             path = QCoreApplication::applicationDirPath() + "/Images/lava";
             l->setPixmap(QPixmap(path).scaled(30, 29));
-            l->setPos(x,y);
+            l->setPos(x,y+1);
             addItem(l);
             lava.append(l);
         }
@@ -481,7 +562,7 @@ void Level01::MakeMap(QString str) {
             QGraphicsPixmapItem *w = new QGraphicsPixmapItem;
             path = QCoreApplication::applicationDirPath() + "/Images/acid";
             w->setPixmap(QPixmap(path).scaled(30, 25));
-            w->setPos(x,y + 4);
+            w->setPos(x,y + 1);
             addItem(w);
             acid.append(w);
         }
@@ -489,28 +570,28 @@ void Level01::MakeMap(QString str) {
             QGraphicsPixmapItem *w = new QGraphicsPixmapItem;
             path = QCoreApplication::applicationDirPath() + "/Images/doors";
             w->setPixmap(QPixmap(path).scaled(90, 90));
-            w->setPos(x,y);
+            w->setPos(x,y+3);
             addItem(w);
             doors.append(w);
         }
         else if(elem == "Pusher") {
             QGraphicsPixmapItem *w = new QGraphicsPixmapItem;
             path = QCoreApplication::applicationDirPath() + "/Images/button";
-            w->setPixmap(QPixmap(path).scaled(60, 30));
+            w->setPixmap(QPixmap(path).scaled(30, 30));
             w->setPos(x,y);
             addItem(w);
 
             f >> x >> y;
             QGraphicsPixmapItem *v = new QGraphicsPixmapItem;
             path = QCoreApplication::applicationDirPath() + "/Images/button";
-            v->setPixmap(QPixmap(path).scaled(60, 30));
+            v->setPixmap(QPixmap(path).scaled(30, 30));
             v->setPos(x,y);
             addItem(v);
 
             f >> x >> y;
             QGraphicsPixmapItem *r = new QGraphicsPixmapItem;
             path = QCoreApplication::applicationDirPath() + "/Images/elevator";
-            r->setPixmap(QPixmap(path).scaled(120, 25));
+            r->setPixmap(QPixmap(path).scaled(120, 22));
             r->setPos(x,y);
             addItem(r);
 
@@ -526,15 +607,21 @@ void Level01::MakeMap(QString str) {
         }
         else if(elem == "Lever") {
             QGraphicsPixmapItem *w = new QGraphicsPixmapItem;
-            path = QCoreApplication::applicationDirPath() + "/Images/elevator";
+            path = QCoreApplication::applicationDirPath() + "/Images/lever";
             w->setPixmap(QPixmap(path).scaled(15, 30));
             w->setPos(x,y);
             addItem(w);
 
+            QGraphicsPixmapItem *s = new QGraphicsPixmapItem;
+            path = QCoreApplication::applicationDirPath() + "/Images/l";
+            s->setPixmap(QPixmap(path).scaled(55, 20));
+            s->setPos(x-5,y + 16);
+            addItem(s);
+
             f >> x >> y;
             QGraphicsPixmapItem *r = new QGraphicsPixmapItem;
             path = QCoreApplication::applicationDirPath() + "/Images/elevator";
-            r->setPixmap(QPixmap(path).scaled(120, 25));
+            r->setPixmap(QPixmap(path).scaled(120, 22));
             r->setPos(x,y);
             addItem(r);
 
@@ -567,7 +654,7 @@ void Level01::MakeMap(QString str) {
         {
             QGraphicsPixmapItem *w = new QGraphicsPixmapItem;
             path = QCoreApplication::applicationDirPath() + "/Images/diamond";
-            w->setPixmap(QPixmap(path).scaled(60, 30));
+            w->setPixmap(QPixmap(path).scaled(27, 20));
             w->setPos(x,y-4);
             addItem(w);
             diamonds.append(w);
@@ -604,6 +691,23 @@ void Level01::MakeMap(QString str) {
 }
 
 void Level01::levelEnd() {
+
+    if(Levels::currentLevel == Levels::lastUnlocked) {
+        Levels::lastUnlocked++;
+    }
+    int s = 0;
+    if(numOfBlueGems == 0)
+        s++;
+    if(numOfRedGems == 0)
+        s++;
+    if(numOfDiamonds == 0)
+        s++;
+    if(timerCount > 150)
+        s--;
+    if(s > Levels::levelStars[Levels::currentLevel - 1])
+        Levels::levelStars[Levels::currentLevel - 1] = s;
+
+
     gravityTimerID--;
     disconnect(&timerFireboy, &QTimer::timeout, this, &Level01::moveFireboy);
     disconnect(&timerWatergirl, &QTimer::timeout, this, &Level01::moveWatergirl);
@@ -611,31 +715,31 @@ void Level01::levelEnd() {
     timer.stop();
 
     endWindow = new QWidget();
-    endWindow->setFixedSize(450, 400);QString path = QCoreApplication::applicationDirPath() + "/Images/levelFinished/";
-    endWindow->setStyleSheet("border-image: url(" + path + "background" + ") 0 0 0 0 stretch stretch; background-image: url(" + path + "bg" + "); border-width: 0px; background-position: center;");
-
-    endWindow->setFixedSize(400, 400);
+    endWindow->setFixedSize(500, 400);
+    QString path = QCoreApplication::applicationDirPath() + "/Images/levelFinished/";
+    endWindow->setStyleSheet("border-image: url(" + path + "background" + QString::number(s) + ") 0 0 0 0 stretch stretch;" +
+                             "background-image: url(" + path + "bg" + "); border-width: 0px; background-position: center;");
     endWindow->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
 
     QHBoxLayout *layout = new QHBoxLayout();
     layout->setSpacing(50);
     layout->setContentsMargins(50, 200, 50, 50);
 
-    nextLevel = new QPushButton("Next level", endWindow);
+    nextLevel = new QPushButton("", endWindow);
     path = QCoreApplication::applicationDirPath() + "/Images/levelFinished/next";
     nextLevel->setFixedSize(80, 80);
     nextLevel->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; background: none;}" +
                                    "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     layout->addWidget(nextLevel);
 
-    exitToManu = new QPushButton("Exit", endWindow);
+    exitToManu = new QPushButton("", endWindow);
     path = QCoreApplication::applicationDirPath() + "/Images/levelFinished/menu";
     exitToManu->setFixedSize(80, 80);
     exitToManu->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; background: none;}" +
                                    "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     layout->addWidget(exitToManu);
 
-    repeatThisLevel = new QPushButton("Repeat level", endWindow);
+    repeatThisLevel = new QPushButton("", endWindow);
     path = QCoreApplication::applicationDirPath() + "/Images/levelFinished/restart";
     repeatThisLevel->setFixedSize(80, 80);
     repeatThisLevel->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; background: none;}" +
@@ -700,16 +804,14 @@ void Level01::gameOver() {
 
 void Level01::repeatLevel() {
     watergirl->setPos(100,570);
-    while(watergirl->collidesWithBlocks(blocks) == NULL) {
-        watergirl->moveBy(0, 1);
+    while(watergirl->collidesWithBlocks(blocks) != NULL) {
+        watergirl->moveBy(0, -1);
     }
-    watergirl->moveBy(0, -1);
 
     fireboy->setPos(100, 660);
-    while(fireboy->collidesWithBlocks(blocks) == NULL) {
-        fireboy->moveBy(0, 1);
+    while(fireboy->collidesWithBlocks(blocks) != NULL) {
+        fireboy->moveBy(0, -1);
     }
-    fireboy->moveBy(0, -1);
 
     directionFireboy = 0;
     directionWatergirl = 0;
@@ -747,9 +849,9 @@ void Level01::repeatLevel() {
     for(int i = 0; i < diamonds.length(); i++) {
        diamonds[i]->show();
     }
-    numOfDiamonds=0;
-    numOfRedGems=0;
-    numOfBlueGems=0;
+    numOfDiamonds = 2;
+    numOfRedGems = 3;
+    numOfBlueGems = 3;
 }
 
 void Level01::pause() {

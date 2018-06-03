@@ -21,58 +21,81 @@ Settings::Settings(View * v, Title *t, QWidget *parent)
     path = QCoreApplication::applicationDirPath() + "/Images/fireboy";
     fireboyLogo = new QGraphicsPixmapItem(QPixmap(path));
     fireboyLogo->setScale(0.5);
-    fireboyLogo->setPos(this->width()/2 - 260, this->height()/2 - 250);
+    fireboyLogo->setPos(this->width()/3 - 80, this->height()/2 - 250);
     addItem(fireboyLogo);
 
     path = QCoreApplication::applicationDirPath() + "/Images/watergirl";
     watergirlLogo = new QGraphicsPixmapItem(QPixmap(path));
     watergirlLogo->setScale(0.5);
-    watergirlLogo->setPos(this->width()/2 + 140, this->height()/2 - 250);
+    watergirlLogo->setPos(2 * this->width()/3 - 80,  this->height()/2 - 250);
     addItem(watergirlLogo);
 
     fireboyUpKeyIndicator = 0;
-    fireboyUp = new QPushButton("Jump key");
-    fireboyUp->setToolTip("Click, then enter new jump key for fireboy");
-    fireboyUp->setGeometry(QRect(400, 400, 100, 32));
+    fireboyUp = new QPushButton("");
+    path = QCoreApplication::applicationDirPath() + "/Images/settings/jump";
+    fireboyUp->setGeometry(QRect(QPoint(this->width()/3 - 50, 400), QSize(0, 0)));
+    fireboyUp->setFixedSize(80, 80);
+    fireboyUp->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; font-size: 30px; background-color: rgba(1, 1, 1, 0);}" +
+                                   "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     addWidget(fireboyUp);
     connect(fireboyUp, SIGNAL(clicked()), this, SLOT(fireboyUpKeyUpdate()));
 
     fireboyLeftKeyIndicator = 0;
-    fireboyLeft = new QPushButton("Left key");
-    fireboyLeft->setToolTip("Click, then enter new left key for fireboy");
-    fireboyLeft->setGeometry(QRect(320,450, 100, 32));
+    fireboyLeft = new QPushButton("");
+    path = QCoreApplication::applicationDirPath() + "/Images/settings/left";
+    fireboyLeft->setGeometry(QRect(QPoint(this->width()/3 - 50 - 80, 450), QSize(0, 0)));
+    fireboyLeft->setFixedSize(80, 80);
+    fireboyLeft->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; font-size: 30px; background-color: rgba(1, 1, 1, 0);}" +
+                                   "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     addWidget(fireboyLeft);
     connect(fireboyLeft, SIGNAL(clicked()), this, SLOT(fireboyLeftKeyUpdate()));
 
     fireboyRightKeyIndicator = 0;
-    fireboyRight = new QPushButton("Right key");
-    fireboyRight->setToolTip("Click, then enter new right key for fireboy");
-    fireboyRight->setGeometry(QRect(480, 450, 100, 32));
+    fireboyRight = new QPushButton("");
+    path = QCoreApplication::applicationDirPath() + "/Images/settings/right";
+    fireboyRight->setGeometry(QRect(QPoint(this->width()/3 - 50 + 80, 450), QSize(0, 0)));
+    fireboyRight->setFixedSize(80, 80);
+    fireboyRight->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; font-size: 30px; background-color: rgba(1, 1, 1, 0);}" +
+                                   "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     addWidget(fireboyRight);
     connect(fireboyRight, SIGNAL(clicked()), this, SLOT(fireboyRightKeyUpdate()));
 
     watergirlUpKeyIndicator = 0;
-    watergirlUp = new QPushButton("Jump key");
-    watergirlUp->setToolTip("Click, then enter new jump key for watergirl");
-    watergirlUp->setGeometry(800, 400, 100, 32);
+    watergirlUp = new QPushButton("");
+    path = QCoreApplication::applicationDirPath() + "/Images/settings/jump";
+    watergirlUp->setGeometry(QRect(QPoint(2 * this->width()/3 - 50, 400), QSize(0, 0)));
+    watergirlUp->setFixedSize(80, 80);
+    watergirlUp->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; font-size: 30px; background-color: rgba(1, 1, 1, 0);}" +
+                                   "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     addWidget(watergirlUp);
     connect(watergirlUp, SIGNAL(clicked()), this, SLOT(watergirlUpKeyUpdate()));
 
     watergirlLeftKeyIndicator = 0;
-    watergirlLeft = new QPushButton("Left key");
-    watergirlLeft->setToolTip("Click, then enter new left key for watergirl");
-    watergirlLeft->setGeometry(720,  450, 100, 32);
+    watergirlLeft = new QPushButton("");
+    path = QCoreApplication::applicationDirPath() + "/Images/settings/left";
+    watergirlLeft->setGeometry(QRect(QPoint(2 * this->width()/3 - 50 - 80, 450), QSize(0, 0)));
+    watergirlLeft->setFixedSize(80, 80);
+    watergirlLeft->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; font-size: 30px; background-color: rgba(1, 1, 1, 0);}" +
+                                   "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     addWidget(watergirlLeft);
     connect(watergirlLeft, SIGNAL(clicked()), this, SLOT(watergirlLeftKeyUpdate()));
 
     watergirlRightKeyIndicator = 0;
-    watergirlRight = new QPushButton("Right key");
-    watergirlRight->setToolTip("Click, then enter new right key for watergirl");
-    watergirlRight->setGeometry(880, 450, 100, 32);
+    watergirlRight = new QPushButton("");
+    path = QCoreApplication::applicationDirPath() + "/Images/settings/right";
+    watergirlRight->setGeometry(QRect(QPoint(2 * this->width()/3 - 50 + 80, 450), QSize(0, 0)));
+    watergirlRight->setFixedSize(80, 80);
+    watergirlRight->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; font-size: 30px; background-color: rgba(1, 1, 1, 0);}" +
+                                   "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     addWidget(watergirlRight);
     connect(watergirlRight, SIGNAL(clicked()), this, SLOT(watergirlRightKeyUpdate()));
-    backToTitle = new QPushButton("Back to title");
-    backToTitle->setGeometry(QRect(this->width()/2 -35, this->height()/2 +200, 100, 32));
+
+    backToTitle = new QPushButton("");
+    path = QCoreApplication::applicationDirPath() + "/Images/settings/back";
+    backToTitle->setGeometry(QRect(QPoint(this->width()/2 - 110, this->height()/2 +200), QSize(0, 0)));
+    backToTitle->setFixedSize(220, 80);
+    backToTitle->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; font-size: 30px; background-color: rgba(1, 1, 1, 0);}" +
+                                   "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     addWidget(backToTitle);
     connect(backToTitle, SIGNAL(clicked()), title, SLOT(back()));
 }
@@ -108,32 +131,44 @@ void Settings::keyPressEvent(QKeyEvent *event)
         return;
     if(fireboyLeftKeyIndicator) {
         fireboyLeftKeyIndicator = 0;
-        fireboyLeftKey = event->key();
+        if(event->key() != watergirlLeftKey && event->key() != watergirlRightKey &&
+           event->key() != watergirlUpKey && event->key() != fireboyRightKey && event->key() != fireboyUpKey)
+            fireboyLeftKey = event->key();
     }
 
     if(fireboyRightKeyIndicator) {
         fireboyRightKeyIndicator = 0;
-        fireboyRightKey = event->key();
+        if(event->key() != watergirlLeftKey && event->key() != watergirlRightKey &&
+                event->key() != watergirlUpKey && event->key() != fireboyLeftKey && event->key() != fireboyUpKey)
+            fireboyRightKey = event->key();
     }
 
     if(fireboyUpKeyIndicator) {
         fireboyUpKeyIndicator = 0;
-        fireboyUpKey = event->key();
+        if(event->key() != watergirlLeftKey && event->key() != watergirlRightKey &&
+                event->key() != watergirlUpKey && event->key() != fireboyLeftKey && event->key() != fireboyRightKey)
+            fireboyUpKey = event->key();
     }
 
     if(watergirlLeftKeyIndicator) {
         watergirlLeftKeyIndicator = 0;
-        watergirlLeftKey = event->key();
+        if(event->key() != fireboyUpKey && event->key() != watergirlRightKey &&
+                event->key() != watergirlUpKey && event->key() != fireboyLeftKey && event->key() != fireboyRightKey)
+            watergirlLeftKey = event->key();
     }
 
     if(watergirlRightKeyIndicator) {
         watergirlRightKeyIndicator = 0;
-        watergirlRightKey = event->key();
+        if(event->key() != watergirlLeftKey && event->key() != fireboyUpKey &&
+                event->key() != watergirlUpKey && event->key() != fireboyLeftKey && event->key() != fireboyRightKey)
+            watergirlRightKey = event->key();
     }
 
     if(watergirlUpKeyIndicator) {
         watergirlUpKeyIndicator = 0;
-        watergirlUpKey = event->key();
+        if(event->key() != watergirlLeftKey && event->key() != fireboyUpKey &&
+                event->key() != watergirlRightKey && event->key() != fireboyLeftKey && event->key() != fireboyRightKey)
+            watergirlUpKey = event->key();
     }
 
 }

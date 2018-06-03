@@ -51,6 +51,7 @@ private:
     QPushButton *watergirlLeft;
     QPushButton *watergirlRight;
 
+
 public slots:
     void fireboyUpKeyUpdate();
     void fireboyRightKeyUpdate();

@@ -19,7 +19,7 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 }
 
 QRectF Player::boundingRect() const {
-    return QRectF(0,5,32,50);
+    return QRectF(0,2,32,53);
 }
 
 QGraphicsPixmapItem* Player::collidesWithBlocks(QList<QGraphicsPixmapItem *> blocks) {

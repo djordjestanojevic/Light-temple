@@ -8,9 +8,9 @@ Level01::Level01(QString str, Levels *l, QWidget *parent)
       velocityWatergirl(0),
       directionFireboy(0),
       directionWatergirl(0),
-      numOfDiamonds(0),
-      numOfRedGems(0),
-      numOfBlueGems(0)
+      numOfDiamonds(2),
+      numOfRedGems(3),
+      numOfBlueGems(3)
 {
 
     MakeMap(str);
@@ -22,10 +22,10 @@ Level01::Level01(QString str, Levels *l, QWidget *parent)
 
     // Postavljanje kretanja i brzine kretanja igraca i lifta
 
-    timerFireboy.setInterval(19);
+    timerFireboy.setInterval(18);
     connect(&timerFireboy, &QTimer::timeout, this, &Level01::moveFireboy);
 
-    timerWatergirl.setInterval(19);
+    timerWatergirl.setInterval(18);
     connect(&timerWatergirl, &QTimer::timeout, this, &Level01::moveWatergirl);
 
     timerElevator.setInterval(20);
@@ -65,7 +65,7 @@ void Level01::initPlayers() {
         fireboy->moveBy(0, -1);
     }
 
-    // Naknadno ubacen deo koda, nalazi se ovde zbog rasporeda elemenata
+    // Naknadno ubacen deo koda, nalazi se ovde zbog rasporeda elemenata, potrebno je ucitati posle igraca kako ne bi igrac bio u prvom planu
 
     for(int i = 0; i < acid.length(); i++)
         addItem(acid[i]);
@@ -129,6 +129,44 @@ void Level01::timerEvent(QTimerEvent *event) {
         }
 
 
+        // Provera kolizije sa dijamantima
+
+        QGraphicsPixmapItem * diamond;
+        QGraphicsPixmapItem * blueGem;
+        QGraphicsPixmapItem * redGem;
+
+        if(watergirl->collidesWithDiamonds(diamonds)){
+            diamond = watergirl->collidesWithDiamonds(diamonds);
+            if(diamond->isVisible()){
+                diamond->hide();
+                numOfDiamonds -= 1;
+            }
+        }
+
+        if(watergirl->collidesWithBlueGems(blueGems)){
+            blueGem=watergirl->collidesWithBlueGems(blueGems);
+            if(blueGem->isVisible()){
+                blueGem->hide();
+                numOfBlueGems-=1;
+            }
+        }
+
+        if(fireboy->collidesWithDiamonds(diamonds)){
+            diamond = fireboy->collidesWithDiamonds(diamonds);
+            if(diamond->isVisible()){
+                numOfDiamonds -= 1;
+                diamond->hide();
+            }
+        }
+
+        if(fireboy->collidesWithRedGems(redGems)){
+            redGem = fireboy->collidesWithRedGems(redGems);
+            if(redGem->isVisible()){
+                redGem->hide();
+                numOfRedGems -= 1;
+            }
+        }
+
 
     }
 //    else if(run == event->timerId()) {
@@ -189,6 +227,7 @@ void Level01::moveFireboy() {
             }
         }
 
+        // Obrada kolizije sa box elementom
         QGraphicsPixmapItem *collidedBox = fireboy->collidesWithBoxes(boxes);
         if(collidedBox != NULL){
             collidedBox->moveBy(-5, 0);
@@ -234,6 +273,7 @@ void Level01::moveWatergirl() {
     if(directionWatergirl == 1) {
         watergirl->moveBy(5, 0);
 
+        //Obrada kolizije sa rucicom pri kretanju
         for(int i = 0; i < levers.length(); i++) {
             bool col = watergirl->collidesWithItem(levers[i].button) && !fireboy->collidesWithItem(levers[i].button);
             if(col && levers[i].buttonPos < 30) {
@@ -246,6 +286,7 @@ void Level01::moveWatergirl() {
             }
         }
 
+        // Obrada kolizije sa box elementom
         QGraphicsPixmapItem *collidedBox = watergirl->collidesWithBoxes(boxes);
         if(collidedBox != NULL){
             collidedBox->moveBy(5, 0);
@@ -267,6 +308,7 @@ void Level01::moveWatergirl() {
     if(directionWatergirl == -1) {
         watergirl->moveBy(-5, 0);
 
+        //Obrada kolizije sa rucicom pri kretanju
         for(int i = 0; i < levers.length(); i++) {
             bool col = watergirl->collidesWithItem(levers[i].button) && !fireboy->collidesWithItem(levers[i].button);
             if(col && levers[i].buttonPos > 0) {
@@ -279,6 +321,7 @@ void Level01::moveWatergirl() {
             }
         }
 
+        // Obrada kolizije sa box elementom
         QGraphicsPixmapItem *collidedBox = watergirl->collidesWithBoxes(boxes);
         if(collidedBox != NULL){
             collidedBox->moveBy(-5, 0);
@@ -298,6 +341,7 @@ void Level01::moveWatergirl() {
     }
 
 
+    // Obrada kolizije sa dijamantima
     QGraphicsPixmapItem * diamond;
     if(watergirl->collidesWithDiamonds(diamonds)){
         diamond = watergirl->collidesWithDiamonds(diamonds);
@@ -526,7 +570,6 @@ void Level01::MakeMap(QString str) {
     QString path = QCoreApplication::applicationDirPath() + "/Images/wall";
 
     background->setBrush(QBrush(QPixmap(path).scaled(600, 600)));
-    addItem(background);
 
     //Ucitavanje elemenata iz datoteke i njihovo postavljanje
 
@@ -741,6 +784,8 @@ void Level01::levelEnd() {
     if(s > Levels::levelStars[Levels::currentLevel - 1])
         Levels::levelStars[Levels::currentLevel - 1] = s;
 
+    std::cout << numOfBlueGems << std::endl << numOfDiamonds << std::endl << numOfRedGems << std::endl;
+
     //Zaustavljanje svih tajmera
 
     gravityTimerID--;
@@ -809,6 +854,13 @@ void Level01::levelEnd() {
 }
 
 void Level01::gameOver() {
+
+    dead = new QMediaPlayer();
+    QString path = QCoreApplication::applicationDirPath() + "/Sound/s.mp3";
+    dead->setMedia(QUrl::fromLocalFile(path));
+    dead->setVolume(500);
+    dead->play();
+
     // Prozor u slucaju nepredjenog nivoa
     gravityTimerID--;
     disconnect(&timerFireboy, &QTimer::timeout, this, &Level01::moveFireboy);
@@ -817,7 +869,8 @@ void Level01::gameOver() {
     timer.stop();
 
     endWindow = new QWidget();
-    endWindow->setFixedSize(450, 400);QString path = QCoreApplication::applicationDirPath() + "/Images/gameOver/";
+    endWindow->setFixedSize(450, 400);
+    path = QCoreApplication::applicationDirPath() + "/Images/gameOver/";
     endWindow->setStyleSheet("border-image: url(" + path + "background" + ") 0 0 0 0 stretch stretch; background-image: url(" + path + "bg" + "); border-width: 0px; background-position: center;");
 
     endWindow->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
@@ -856,6 +909,8 @@ void Level01::gameOver() {
 
     connect(repeatThisLevel, &QPushButton::pressed, player, &QMediaPlayer::play);
     connect(exitToMenu, &QPushButton::pressed, player, &QMediaPlayer::play);
+    connect(repeatThisLevel, &QPushButton::clicked, dead, &QMediaPlayer::stop);
+    connect(exitToMenu, &QPushButton::clicked, dead, &QMediaPlayer::stop);
 
     endWindow->show();
 

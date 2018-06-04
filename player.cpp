@@ -8,7 +8,7 @@ Player::Player(QString str, QGraphicsItem *parent)
     pixmap = QPixmap(str).scaled(32, 55);
 
     // Animacija igraca, nije koriscena jer smo zeleli da koristimo iste igrace kao i u originalnoj igrici
-    // ideja je preuzeta sa github.com/equati0n/QtMario_Youtube i komentarisane promenljive se u nastavku odnose na animaciju
+    // ideja je preuzeta sa github.com/equati0n/QtMario_Youtube i komentarisane promenljive i metode se u nastavku odnose na animaciju
 //     path = str;
 //     direction = 0;
 

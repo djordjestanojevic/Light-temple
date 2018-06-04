@@ -8,6 +8,7 @@
 #include <QKeyEvent>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QMediaPlayer>
 #include <QStyle>
 #include <iostream>
 #include <fstream>
@@ -104,6 +105,8 @@ private:
     int numOfDiamonds;
     int numOfRedGems;
     int numOfBlueGems;
+
+    QMediaPlayer *dead;
 
 private slots:
     void moveFireboy();

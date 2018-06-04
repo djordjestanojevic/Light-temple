@@ -125,7 +125,7 @@ Settings::Settings(View * v, Title *t, QWidget *parent)
 
     QMediaPlaylist *playList = new QMediaPlaylist();
     path = QCoreApplication::applicationDirPath() + "/Sound/e.mp3";
-    playList->addMedia(QUrl("http://soundimage.org/wp-content/uploads/2016/07/Fantasy_Game_Background_Looping.mp3"));
+    playList->addMedia(QUrl::fromLocalFile(path));
     playList->setPlaybackMode(QMediaPlaylist::Loop);
 
     sound = new QMediaPlayer();

@@ -3,29 +3,27 @@
 
 Level01::Level01(QString str, Levels *l, QWidget *parent)
     : QGraphicsScene(0, 0,  1280, 760, parent),
-      pauseOnOff(0)
+      levels(l),
+      velocityFireboy(0),
+      velocityWatergirl(0),
+      directionFireboy(0),
+      directionWatergirl(0),
+      numOfDiamonds(0),
+      numOfRedGems(0),
+      numOfBlueGems(0)
 {
-    std::cout << Levels::levelStars[Levels::currentLevel - 1] << std::endl;
-    levels = l;
-    directionFireboy = 0;
-    directionWatergirl = 0;
-
-    velocityFireboy = 0;
-    velocityWatergirl = 0;
-
-    numOfDiamonds = 2;
-    numOfBlueGems = 3;
-    numOfRedGems = 3;
 
     MakeMap(str);
     initPlayers();
 
     gravityTimerID = startTimer(19.5);
 
-    timerFireboy.setInterval(20);
+//    run = startTimer(100);
+
+    timerFireboy.setInterval(15);
     connect(&timerFireboy, &QTimer::timeout, this, &Level01::moveFireboy);
 
-    timerWatergirl.setInterval(20);
+    timerWatergirl.setInterval(15);
     connect(&timerWatergirl, &QTimer::timeout, this, &Level01::moveWatergirl);
 
     timerElevator.setInterval(20);
@@ -55,7 +53,12 @@ void Level01::initPlayers() {
         fireboy->moveBy(0, -1);
     }
 
-
+    for(int i = 0; i < acid.length(); i++)
+        addItem(acid[i]);
+    for(int i = 0; i < water.length(); i++)
+        addItem(water[i]);
+    for(int i = 0; i < lava.length(); i++)
+        addItem(lava[i]);
 }
 
 void Level01::timerEvent(QTimerEvent *event) {
@@ -106,6 +109,8 @@ void Level01::timerEvent(QTimerEvent *event) {
 
         // Kraj igre u slucaju dodira sa nekom tecnosti
         if(fireboy->collidesWithFluid(acid, water) || watergirl->collidesWithFluid(acid, lava)) {
+            watergirl->hide();
+            fireboy->hide();
             gameOver();
         }
 
@@ -146,6 +151,10 @@ void Level01::timerEvent(QTimerEvent *event) {
         }
 
     }
+//    else if(run == event->timerId()) {
+//        fireboy->nextFrame();
+//        watergirl->nextFrame();
+//    }
 }
 
 void Level01::moveFireboy() {
@@ -444,10 +453,14 @@ void Level01::keyPressEvent(QKeyEvent *event)
     if (event->key()==Settings::fireboyRightKey){
             directionFireboy += 1;
             timerFireboy.start();
+//            fireboy->setPixmap("run");
+//            fireboy->setDirection(1);
     }
     if (event->key()==Settings::fireboyLeftKey){
             directionFireboy -= 1;
             timerFireboy.start();
+//            fireboy->setPixmap("run");
+//            fireboy->setDirection(-1);
     }
     if(event->key()==Settings::fireboyUpKey){
             if(fireboy->onGround(blocks)) {
@@ -457,11 +470,15 @@ void Level01::keyPressEvent(QKeyEvent *event)
      if(event->key()==Settings::watergirlRightKey){
          directionWatergirl += 1;
          timerWatergirl.start();
+//         watergirl->setPixmap("run");
+//         watergirl->setDirection(1);
      }
 
      if(event->key()==Settings::watergirlLeftKey){
          directionWatergirl -= 1;
          timerWatergirl.start();
+//         watergirl->setPixmap("run");
+//         watergirl->setDirection(-1);
      }
      if(event->key()==Settings::watergirlUpKey) {
             if(watergirl->onGround(blocks)) {
@@ -479,24 +496,36 @@ void Level01::keyReleaseEvent(QKeyEvent *event)
 
     if(event->key()==Settings::watergirlRightKey){
         directionWatergirl -= 1;
-        if(directionWatergirl == 0)
+        if(directionWatergirl == 0) {
             timerWatergirl.stop();
+//            watergirl->setPixmap("stand");
+//            watergirl->setDirection(1);
+        }
     }
 
     if(event->key()==Settings::watergirlLeftKey){
         directionWatergirl += 1;
-        if(directionWatergirl == 0)
+        if(directionWatergirl == 0) {
             timerWatergirl.stop();
+//            watergirl->setPixmap("stand");
+//            watergirl->setDirection(-1);
+        }
     }
     if (event->key()==Settings::fireboyRightKey){
         directionFireboy -= 1;
-        if(directionFireboy == 0)
+        if(directionFireboy == 0) {
             timerFireboy.stop();
+//            fireboy->setPixmap("stand");
+//            fireboy->setDirection(1);
+        }
     }
     if (event->key()==Settings::fireboyLeftKey){
         directionFireboy += 1;
-        if(directionFireboy == 0)
+        if(directionFireboy == 0) {
             timerFireboy.stop();
+//            fireboy->setPixmap("stand");
+//            fireboy->setDirection(-1);
+        }
     }
 
 }
@@ -543,9 +572,8 @@ void Level01::MakeMap(QString str) {
         {
             QGraphicsPixmapItem *l = new QGraphicsPixmapItem;
             path = QCoreApplication::applicationDirPath() + "/Images/lava";
-            l->setPixmap(QPixmap(path).scaled(30, 29));
+            l->setPixmap(QPixmap(path).scaled(30, 25));
             l->setPos(x,y+1);
-            addItem(l);
             lava.append(l);
         }
         else if(elem == "Water")
@@ -554,7 +582,6 @@ void Level01::MakeMap(QString str) {
             path = QCoreApplication::applicationDirPath() + "/Images/water";
             w->setPixmap(QPixmap(path).scaled(30, 25));
             w->setPos(x,y + 1);
-            addItem(w);
             water.append(w);
         }
         else if(elem == "Acid")
@@ -563,7 +590,6 @@ void Level01::MakeMap(QString str) {
             path = QCoreApplication::applicationDirPath() + "/Images/acid";
             w->setPixmap(QPixmap(path).scaled(30, 25));
             w->setPos(x,y + 1);
-            addItem(w);
             acid.append(w);
         }
         else if(elem == "Door") {
@@ -688,6 +714,14 @@ void Level01::MakeMap(QString str) {
     addWidget(pauseGame);
     connect(pauseGame, SIGNAL(clicked()), SLOT(pauseOnTimer()));
 
+
+    QMediaPlayer *player = new QMediaPlayer();
+    path = QCoreApplication::applicationDirPath() + "/Sound/click.mp3";
+    player->setMedia(QUrl::fromLocalFile(path));
+    player->setVolume(500);
+
+    connect(pauseGame, &QPushButton::pressed, player, &QMediaPlayer::play);
+
 }
 
 void Level01::levelEnd() {
@@ -696,11 +730,11 @@ void Level01::levelEnd() {
         Levels::lastUnlocked++;
     }
     int s = 0;
-    if(numOfBlueGems == 0)
+    if(numOfBlueGems <= 0)
         s++;
-    if(numOfRedGems == 0)
+    if(numOfRedGems <= 0)
         s++;
-    if(numOfDiamonds == 0)
+    if(numOfDiamonds <= 0)
         s++;
     if(timerCount > 150)
         s--;
@@ -720,6 +754,8 @@ void Level01::levelEnd() {
     endWindow->setStyleSheet("border-image: url(" + path + "background" + QString::number(s) + ") 0 0 0 0 stretch stretch;" +
                              "background-image: url(" + path + "bg" + "); border-width: 0px; background-position: center;");
     endWindow->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+
+    endWindow->setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, endWindow->size(), qApp->desktop()->availableGeometry()));
 
     QHBoxLayout *layout = new QHBoxLayout();
     layout->setSpacing(50);
@@ -755,6 +791,16 @@ void Level01::levelEnd() {
     connect(repeatThisLevel, SIGNAL(clicked()), this, SLOT(repeatLevel()));
     connect(repeatThisLevel, SIGNAL(clicked()), endWindow, SLOT(close()));
 
+
+    QMediaPlayer *player = new QMediaPlayer();
+    path = QCoreApplication::applicationDirPath() + "/Sound/click.mp3";
+    player->setMedia(QUrl::fromLocalFile(path));
+    player->setVolume(500);
+
+    connect(nextLevel, &QPushButton::pressed, player, &QMediaPlayer::play);
+    connect(exitToManu, &QPushButton::pressed, player, &QMediaPlayer::play);
+    connect(repeatThisLevel, &QPushButton::pressed, player, &QMediaPlayer::play);
+
     endWindow->show();
 
 }
@@ -771,6 +817,7 @@ void Level01::gameOver() {
     endWindow->setStyleSheet("border-image: url(" + path + "background" + ") 0 0 0 0 stretch stretch; background-image: url(" + path + "bg" + "); border-width: 0px; background-position: center;");
 
     endWindow->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    endWindow->setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, endWindow->size(), qApp->desktop()->availableGeometry()));
 
     QHBoxLayout *layout = new QHBoxLayout();
     layout->setSpacing(50);
@@ -798,6 +845,14 @@ void Level01::gameOver() {
     connect(exitToManu, SIGNAL(clicked()), levels, SLOT(exitLevel()));
     connect(exitToManu, SIGNAL(clicked()), endWindow, SLOT(close()));
 
+    QMediaPlayer *player = new QMediaPlayer();
+    path = QCoreApplication::applicationDirPath() + "/Sound/click.mp3";
+    player->setMedia(QUrl::fromLocalFile(path));
+    player->setVolume(500);
+
+    connect(repeatThisLevel, &QPushButton::pressed, player, &QMediaPlayer::play);
+    connect(exitToManu, &QPushButton::pressed, player, &QMediaPlayer::play);
+
     endWindow->show();
 
 }
@@ -806,12 +861,17 @@ void Level01::repeatLevel() {
     watergirl->setPos(100,570);
     while(watergirl->collidesWithBlocks(blocks) != NULL) {
         watergirl->moveBy(0, -1);
+//        watergirl->setDirection(-1);
     }
 
     fireboy->setPos(100, 660);
     while(fireboy->collidesWithBlocks(blocks) != NULL) {
         fireboy->moveBy(0, -1);
+//        fireboy->setDirection(-1);
     }
+
+    fireboy->show();
+    watergirl->show();
 
     directionFireboy = 0;
     directionWatergirl = 0;
@@ -867,6 +927,7 @@ void Level01::pause() {
     endWindow->setStyleSheet("border-image: url(" + path + "background" + ") 0 0 0 0 stretch stretch; background-image: url(" + path + "bg" + "); border-width: 0px; background-position: center;");
 
     endWindow->setWindowFlags(Qt::Window | Qt::FramelessWindowHint);
+    endWindow->setGeometry(QStyle::alignedRect(Qt::LeftToRight, Qt::AlignCenter, endWindow->size(), qApp->desktop()->availableGeometry()));
 
     QHBoxLayout *layout = new QHBoxLayout();
     layout->setSpacing(50);
@@ -904,6 +965,15 @@ void Level01::pause() {
 
     connect(resume, SIGNAL(clicked()), this, SLOT(resumeLevel()));
     connect(resume, SIGNAL(clicked()), endWindow, SLOT(close()));
+
+    QMediaPlayer *player = new QMediaPlayer();
+    path = QCoreApplication::applicationDirPath() + "/Sound/click.mp3";
+    player->setMedia(QUrl::fromLocalFile(path));
+    player->setVolume(500);
+
+    connect(repeatThisLevel, &QPushButton::pressed, player, &QMediaPlayer::play);
+    connect(exitToManu, &QPushButton::pressed, player, &QMediaPlayer::play);
+    connect(resume, &QPushButton::pressed, player, &QMediaPlayer::play);
 
 }
 

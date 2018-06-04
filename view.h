@@ -4,6 +4,8 @@
 #include <QGraphicsView>
 #include <QPushButton>
 #include <QGraphicsScene>
+#include <QApplication>
+#include <QDesktopWidget>
 
 #include "title.h"
 

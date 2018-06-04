@@ -20,8 +20,20 @@ public:
     bool collidesWithFluid(QList<QGraphicsPixmapItem *> wf, QList<QGraphicsPixmapItem *> acid);
 
     bool onGround(QList<QGraphicsPixmapItem *> blocks);
+
+    void nextFrame();
+    void setPixmap(QString s);
+    void setDirection(int i);
 private:
     QPixmap pixmap;
+    QPixmap standPixmap;
+    QPixmap runPixmap;
+    QPixmap currentPixmap;
+    int currentFrame;
+
+    int direction;
+
+    QString path;
 };
 
 #endif // PLAYER_H

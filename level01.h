@@ -8,6 +8,7 @@
 #include <QKeyEvent>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QStyle>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -38,8 +39,6 @@ private:
     void levelEnd();
     void gameOver();
     void pause();
-
-    int pauseOnOff;
 
     Player *fireboy;
     Player *watergirl;
@@ -81,6 +80,7 @@ private:
     QTimer timerElevator;
 
     int gravityTimerID;
+    int run;
 
     float velocityFireboy;
     float velocityWatergirl;

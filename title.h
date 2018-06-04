@@ -6,6 +6,7 @@
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QApplication>
+#include <QMediaPlayer>
 
 #include "view.h"
 #include "settings.h"

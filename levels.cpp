@@ -6,10 +6,10 @@ int Levels::currentLevel = 1;
 int Levels::levelStars[5];
 
 Levels::Levels(View *v, Title *t, QWidget *parent)
-    : QGraphicsScene(parent)
+    : QGraphicsScene(parent),
+      view(v),
+      title(t)
 {
-    view = v;
-    title = t;
 
     QString path = QCoreApplication::applicationDirPath() + "/levelStar.txt";
     std::ifstream f(path.toStdString(), std::ifstream::in);
@@ -103,6 +103,18 @@ Levels::Levels(View *v, Title *t, QWidget *parent)
                                    "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     addWidget(mainMenu);
     connect(mainMenu, SIGNAL(clicked()), title, SLOT(back()));
+
+    QMediaPlayer *player = new QMediaPlayer();
+    path = QCoreApplication::applicationDirPath() + "/Sound/click.mp3";
+    player->setMedia(QUrl::fromLocalFile(path));
+    player->setVolume(500);
+
+    connect(button[0], &QPushButton::pressed, player, &QMediaPlayer::play);
+    connect(button[1], &QPushButton::pressed, player, &QMediaPlayer::play);
+    connect(button[2], &QPushButton::pressed, player, &QMediaPlayer::play);
+    connect(button[3], &QPushButton::pressed, player, &QMediaPlayer::play);
+    connect(button[4], &QPushButton::pressed, player, &QMediaPlayer::play);
+    connect(mainMenu, &QPushButton::pressed, player, &QMediaPlayer::play);
 }
 
 

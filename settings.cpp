@@ -8,10 +8,10 @@ int Settings::watergirlUpKey = 87;
 
 
 Settings::Settings(View * v, Title *t, QWidget *parent)
-    : QGraphicsScene(parent)
+    : QGraphicsScene(parent),
+      view(v),
+      title(t)
 {
-    view = v;
-    title = t;
 
     this->setSceneRect(0,0,1280,760);
     QString path = QCoreApplication::applicationDirPath() + "/Images/background";
@@ -98,6 +98,19 @@ Settings::Settings(View * v, Title *t, QWidget *parent)
                                    "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     addWidget(backToTitle);
     connect(backToTitle, SIGNAL(clicked()), title, SLOT(back()));
+
+    QMediaPlayer *player = new QMediaPlayer();
+    path = QCoreApplication::applicationDirPath() + "/Sound/click.mp3";
+    player->setMedia(QUrl::fromLocalFile(path));
+    player->setVolume(500);
+
+    connect(fireboyUp, &QPushButton::pressed, player, &QMediaPlayer::play);
+    connect(fireboyLeft, &QPushButton::pressed, player, &QMediaPlayer::play);
+    connect(fireboyRight, &QPushButton::pressed, player, &QMediaPlayer::play);
+    connect(watergirlLeft, &QPushButton::pressed, player, &QMediaPlayer::play);
+    connect(watergirlRight, &QPushButton::pressed, player, &QMediaPlayer::play);
+    connect(watergirlUp, &QPushButton::pressed, player, &QMediaPlayer::play);
+    connect(backToTitle, &QPushButton::pressed, player, &QMediaPlayer::play);
 }
 
 

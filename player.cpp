@@ -4,14 +4,22 @@
 Player::Player(QString str, QGraphicsItem *parent)
     : QGraphicsItem(parent)
 {
+
     pixmap = QPixmap(str).scaled(32, 55);
+//    path = str;
+//    direction = 0;
+
+//    standPixmap = QPixmap(str + "Stand").scaled(320, 50);
+//    runPixmap = QPixmap(str + "Run").scaled(320, 50);
+//    currentPixmap = standPixmap;
+//    currentFrame = 0;
 }
 
 void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {
     // Iscrtava figuru
     painter->drawPixmap(0,0 /* koordinate centra figure */,
-                        pixmap /* Figura */,
-                        0, 0, 32, 55)/* velicina figure */;
+                        /*currentPixmap*/ pixmap /* Figura */,
+                        /*currentFrame*/ 0, 0, 32, 55)/* velicina figure */;
     setTransformOriginPoint(boundingRect().center());
     Q_UNUSED(widget);
     Q_UNUSED(option);
@@ -19,7 +27,7 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 }
 
 QRectF Player::boundingRect() const {
-    return QRectF(0,2,32,53);
+    return QRectF(0,0,32, 55);
 }
 
 QGraphicsPixmapItem* Player::collidesWithBlocks(QList<QGraphicsPixmapItem *> blocks) {
@@ -97,5 +105,25 @@ QGraphicsPixmapItem* Player::collidesWithDiamonds(QList<QGraphicsPixmapItem *> d
             return diamonds[i];
     }
     return NULL;
+}
+
+void Player::nextFrame() {
+    if(currentFrame > 250)
+        currentFrame = 0;
+    currentFrame += 32;
+}
+
+void Player::setPixmap(QString s) {
+    if(s == "run")
+        currentPixmap = runPixmap;
+    if(s == "stand")
+        currentPixmap = standPixmap;
+}
+
+void Player::setDirection(int i) {
+    if(i != direction && direction != 0)
+        moveBy(-32*i, 0);
+    direction = i;
+    setTransform(QTransform(i, 0, 0, 1, 0, 0));
 }
 

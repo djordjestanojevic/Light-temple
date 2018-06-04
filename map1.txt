@@ -402,8 +402,8 @@ Block 1165 750
 Block 1195 750
 Block 1225 750
 Block 1255 750
-Diamond 905 310
-Diamond 25 55
+Diamond 915 310
+Diamond 55 55
 RedGem 400 680
 RedGem 635 540
 RedGem 375 165

@@ -160,12 +160,13 @@ Block 235 480
 Block 265 480
 Block 295 480
 Block 325 480
-Block 355 480
+Acid 355 480
+BlockCut 355 500
 Acid 385 480
 BlockCut 385 500
 Acid 415 480
 BlockCut 415 500
-Diamond 430 450
+Diamond 445 450
 Block 445 480
 Lava 475 480
 BlockCut 475 500
@@ -242,8 +243,7 @@ Block -5 690
 Block 685 690
 Block 1255 690
 Block -5 720
-Water 545 750
-BlockCut 545 770
+Block 545 750
 Box 635 720
 Block 685 720
 Box 985 720

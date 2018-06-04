@@ -1,11 +1,11 @@
-RedGem 445 545
-BlueGem 475 540
-RedGem 445 515
-BlueGem 475 510
+RedGem 460 545
+BlueGem 460 510
 RedGem 355 330
-BlueGem 385 330
-Diamond 145 360
+BlueGem 385 325
+Diamond 115 360
 Diamond 1155 105
+BlueGem 925 105
+RedGem 400 105
 Block -5 0
 Block 25 0
 Block 55 0

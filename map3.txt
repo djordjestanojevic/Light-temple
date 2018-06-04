@@ -1,6 +1,7 @@
 Pusher 295 690 745 690 445 630
 Pusher 1165 690 565 540 835 600
 RedGem 1135 690
+Diamond 1200 80
 Block -5 0
 Block 25 0
 Block 55 0
@@ -97,10 +98,10 @@ Block -5 150
 Block 1255 150
 Block -5 180
 Block 145 180
-BlueGem 145 150
+BlueGem 160 145
 Block 175 180
 Block 295 180
-RedGem 295 150
+RedGem 310 150
 Block 325 180
 Block 445 180
 Block 475 180
@@ -194,8 +195,8 @@ Block 1195 390
 Block 1225 390
 Block 1255 390
 Block -5 420
-BlueGem 205 420
-Diamond 115 390
+BlueGem 1205 330
+BlueGem 115 385
 RedGem 100 360
 Diamond 85 390
 Block 685 420
@@ -353,9 +354,12 @@ Water 985 720
 BlockCut 985 740
 Water 1015 720
 BlockCut 1015 740
-Block 1045 720
-Block 1075 720
-Block 1105 720
+Water 1045 720
+BlockCut 1045 740
+Water 1075 720
+Water 1105 720
+BlockCut 1075 740
+BlockCut 1105 740
 Block 1135 720
 Block 1165 720
 Block 1195 720

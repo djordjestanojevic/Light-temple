@@ -6,8 +6,11 @@ Player::Player(QString str, QGraphicsItem *parent)
 {
 
     pixmap = QPixmap(str).scaled(32, 55);
-//    path = str;
-//    direction = 0;
+
+    // Animacija igraca, nije koriscena jer smo zeleli da koristimo iste igrace kao i u originalnoj igrici
+    // ideja je preuzeta sa github.com/equati0n/QtMario_Youtube i komentarisane promenljive se u nastavku odnose na animaciju
+//     path = str;
+//     direction = 0;
 
 //    standPixmap = QPixmap(str + "Stand").scaled(320, 50);
 //    runPixmap = QPixmap(str + "Run").scaled(320, 50);
@@ -29,6 +32,8 @@ void Player::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QW
 QRectF Player::boundingRect() const {
     return QRectF(0,0,32, 55);
 }
+
+// Provera kolizija sa elementima mape
 
 QGraphicsPixmapItem* Player::collidesWithBlocks(QList<QGraphicsPixmapItem *> blocks) {
 
@@ -65,18 +70,6 @@ bool Player::collidesWithFluid(QList<QGraphicsPixmapItem *> wf, QList<QGraphicsP
 
 }
 
-bool Player::onGround(QList<QGraphicsPixmapItem *> blocks) {
-
-    moveBy(0, 1);
-    if(collidesWithBlocks(blocks) != NULL) {
-        moveBy(0, -1);
-        return true;
-    }
-    else {
-        moveBy(0, -1);
-        return false;
-    }
-}
 
 
 QGraphicsPixmapItem* Player::collidesWithRedGems(QList<QGraphicsPixmapItem *> redGems){
@@ -106,6 +99,24 @@ QGraphicsPixmapItem* Player::collidesWithDiamonds(QList<QGraphicsPixmapItem *> d
     }
     return NULL;
 }
+
+
+// Provera da li se igrac nalazi na tlu
+
+bool Player::onGround(QList<QGraphicsPixmapItem *> blocks) {
+
+    moveBy(0, 2);
+    if(collidesWithBlocks(blocks) != NULL) {
+        moveBy(0, -2);
+        return true;
+    }
+    else {
+        moveBy(0, -2);
+        return false;
+    }
+}
+
+//Metode za animaciju (ne koriste se)
 
 void Player::nextFrame() {
     if(currentFrame > 250)

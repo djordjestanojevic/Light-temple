@@ -55,6 +55,7 @@ Title::Title(View *v, QWidget *parent)
     connect(quitButton, SIGNAL(clicked()), this, SLOT(quitProgram()));
     addWidget(quitButton);
 
+    // Ubacujemo zvuk klika
     QMediaPlayer *player = new QMediaPlayer();
     path = QCoreApplication::applicationDirPath() + "/Sound/click.mp3";
     player->setMedia(QUrl::fromLocalFile(path));
@@ -64,6 +65,8 @@ Title::Title(View *v, QWidget *parent)
     connect(settingsButton, &QPushButton::pressed, player, &QMediaPlayer::play);
     connect(quitButton, &QPushButton::pressed, player, &QMediaPlayer::play);
 }
+
+// Slotovi za postavljanje scene u zavisnosti od kliknutog dugmeta
 
 void Title::startProgram() {
 

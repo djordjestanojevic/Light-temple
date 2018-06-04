@@ -90,7 +90,7 @@ private:
     int directionWatergirl;
 
     QPushButton *nextLevel;
-    QPushButton *exitToManu;
+    QPushButton *exitToMenu;
     QPushButton *repeatThisLevel;
     QPushButton *resume;
 

@@ -8,6 +8,8 @@
 #include <QKeyEvent>
 #include <QGraphicsPixmapItem>
 #include <QApplication>
+#include <QMediaPlayer>
+#include <QMediaPlaylist>
 #include <iostream>
 #include <QGraphicsView>
 
@@ -51,6 +53,9 @@ private:
     QPushButton *watergirlLeft;
     QPushButton *watergirlRight;
 
+    QPushButton *mute;
+
+    QMediaPlayer *sound;
 
 public slots:
     void fireboyUpKeyUpdate();
@@ -59,6 +64,7 @@ public slots:
     void watergirlUpKeyUpdate();
     void watergirlRightKeyUpdate();
     void watergirlLeftKeyUpdate();
+    void muteButton();
 };
 
 #endif // SETTINGS_H

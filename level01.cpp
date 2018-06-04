@@ -20,15 +20,19 @@ Level01::Level01(QString str, Levels *l, QWidget *parent)
 
 //    run = startTimer(100);
 
-    timerFireboy.setInterval(15);
+    // Postavljanje kretanja i brzine kretanja igraca i lifta
+
+    timerFireboy.setInterval(19);
     connect(&timerFireboy, &QTimer::timeout, this, &Level01::moveFireboy);
 
-    timerWatergirl.setInterval(15);
+    timerWatergirl.setInterval(19);
     connect(&timerWatergirl, &QTimer::timeout, this, &Level01::moveWatergirl);
 
     timerElevator.setInterval(20);
     connect(&timerElevator, &QTimer::timeout, this, &Level01::moveElevator);
     timerElevator.start();
+
+    // Postavljanje tajmera za vreme
 
     timerCount = 0;
     timer.setInterval(1000);
@@ -36,22 +40,32 @@ Level01::Level01(QString str, Levels *l, QWidget *parent)
     timer.start();
 }
 
+
+
+
 void Level01::initPlayers() {
+
     watergirl = new Player(QString(QCoreApplication::applicationDirPath() + "/Images/watergirl"));
     watergirl->setPos(100,570);
     this->addItem(watergirl);
 
-    while(watergirl->collidesWithBlocks(blocks) != NULL) {
-        watergirl->moveBy(0, -1);
-    }
 
     fireboy = new Player(QString(QCoreApplication::applicationDirPath() + "/Images/fireboy"));
     fireboy->setPos(100, 660);
     this->addItem(fireboy);
 
+    //Igrac se pomera nagore sve dok je u koliziji sa blokom
+
+    while(watergirl->collidesWithBlocks(blocks) != NULL) {
+        watergirl->moveBy(0, -1);
+    }
+
+
     while(fireboy->collidesWithBlocks(blocks) != NULL) {
         fireboy->moveBy(0, -1);
     }
+
+    // Naknadno ubacen deo koda, nalazi se ovde zbog rasporeda elemenata
 
     for(int i = 0; i < acid.length(); i++)
         addItem(acid[i]);
@@ -114,41 +128,7 @@ void Level01::timerEvent(QTimerEvent *event) {
             gameOver();
         }
 
-        QGraphicsPixmapItem * diamond;
-        QGraphicsPixmapItem * blueGem;
-        QGraphicsPixmapItem * redGem;
 
-        if(watergirl->collidesWithDiamonds(diamonds)){
-            diamond = watergirl->collidesWithDiamonds(diamonds);
-            if(diamond->isVisible()){
-                diamond->hide();
-                numOfDiamonds -= 1;
-            }
-        }
-
-        if(watergirl->collidesWithBlueGems(blueGems)){
-            blueGem=watergirl->collidesWithBlueGems(blueGems);
-            if(blueGem->isVisible()){
-                blueGem->hide();
-                numOfBlueGems-=1;
-            }
-        }
-
-        if(fireboy->collidesWithDiamonds(diamonds)){
-            diamond = fireboy->collidesWithDiamonds(diamonds);
-            if(diamond->isVisible()){
-                numOfDiamonds -= 1;
-                diamond->hide();
-            }
-        }
-
-        if(fireboy->collidesWithRedGems(redGems)){
-            redGem = fireboy->collidesWithRedGems(redGems);
-            if(redGem->isVisible()){
-                redGem->hide();
-                numOfRedGems -= 1;
-            }
-        }
 
     }
 //    else if(run == event->timerId()) {
@@ -162,6 +142,7 @@ void Level01::moveFireboy() {
     if(directionFireboy == 1) {
         fireboy->moveBy(5, 0);
 
+        //Obrada kolizije sa rucicom pri kretanju
         for(int i = 0; i < levers.length(); i++) {
             bool col = fireboy->collidesWithItem(levers[i].button) && !watergirl->collidesWithItem(levers[i].button);
             if(col && levers[i].buttonPos < 30) {
@@ -173,6 +154,7 @@ void Level01::moveFireboy() {
                 levers[i].onOff = 1;
             }
         }
+        // Obrada kolizije sa box elementom
 
         QGraphicsPixmapItem *collidedBox = fireboy->collidesWithBoxes(boxes);
         if(collidedBox != NULL){
@@ -224,6 +206,7 @@ void Level01::moveFireboy() {
         }
     }
 
+    // Obrada kolizije sa dijamantima
 
     QGraphicsPixmapItem * diamond;
     if(fireboy->collidesWithDiamonds(diamonds)){
@@ -339,6 +322,7 @@ void Level01::moveWatergirl() {
 void Level01::moveElevator() {
 
     for(int i = 0; i < pushers.length(); i++) {
+        // Provera da li se neko od igraca nalazi na dugmetu i pokretanje lifta
 
         bool but1 = fireboy->collidesWithItem(pushers[i].button1) || watergirl->collidesWithItem(pushers[i].button1);
         bool but2 = fireboy->collidesWithItem(pushers[i].button2) || watergirl->collidesWithItem(pushers[i].button2);
@@ -381,6 +365,8 @@ void Level01::moveElevator() {
 
 
     }
+
+    //Provera promene stanja rucice, pokretanje lifta i obrada kolizija
 
     for(int i = 0; i < levers.length(); i++) {
 
@@ -444,6 +430,8 @@ void Level01::moveElevator() {
 
 
 }
+
+//Kretanje igraca
 
 void Level01::keyPressEvent(QKeyEvent *event)
 {
@@ -532,10 +520,15 @@ void Level01::keyReleaseEvent(QKeyEvent *event)
 
 void Level01::MakeMap(QString str) {
 
+    //Postavljanje pozadine
+
     background = this->addRect(0, 0, 1280,760);
     QString path = QCoreApplication::applicationDirPath() + "/Images/wall";
 
     background->setBrush(QBrush(QPixmap(path).scaled(600, 600)));
+    addItem(background);
+
+    //Ucitavanje elemenata iz datoteke i njihovo postavljanje
 
     path = QCoreApplication::applicationDirPath() + "/"+str;
     std::ifstream f(path.toStdString(), std::ifstream::in);
@@ -707,6 +700,7 @@ void Level01::MakeMap(QString str) {
             break;
     }
 
+    // Postavljanje tajmera
 
     pauseGame = new QPushButton("00:00");
     pauseGame->setGeometry(QRect(this->width()/2 - 50, 0, 100, 30));
@@ -714,6 +708,7 @@ void Level01::MakeMap(QString str) {
     addWidget(pauseGame);
     connect(pauseGame, SIGNAL(clicked()), SLOT(pauseOnTimer()));
 
+    //Postavljanje zvuka klika
 
     QMediaPlayer *player = new QMediaPlayer();
     path = QCoreApplication::applicationDirPath() + "/Sound/click.mp3";
@@ -724,7 +719,12 @@ void Level01::MakeMap(QString str) {
 
 }
 
+// Prozori pri interakciji
+
 void Level01::levelEnd() {
+    // Uspesno zavrsen nivo
+
+    // Dodela broja zvezdica
 
     if(Levels::currentLevel == Levels::lastUnlocked) {
         Levels::lastUnlocked++;
@@ -741,12 +741,15 @@ void Level01::levelEnd() {
     if(s > Levels::levelStars[Levels::currentLevel - 1])
         Levels::levelStars[Levels::currentLevel - 1] = s;
 
+    //Zaustavljanje svih tajmera
 
     gravityTimerID--;
     disconnect(&timerFireboy, &QTimer::timeout, this, &Level01::moveFireboy);
     disconnect(&timerWatergirl, &QTimer::timeout, this, &Level01::moveWatergirl);
     disconnect(&timerElevator, &QTimer::timeout, this, &Level01::moveElevator);
     timer.stop();
+
+    //Postavljanje prozora i dugmica
 
     endWindow = new QWidget();
     endWindow->setFixedSize(500, 400);
@@ -768,12 +771,12 @@ void Level01::levelEnd() {
                                    "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     layout->addWidget(nextLevel);
 
-    exitToManu = new QPushButton("", endWindow);
+    exitToMenu = new QPushButton("", endWindow);
     path = QCoreApplication::applicationDirPath() + "/Images/levelFinished/menu";
-    exitToManu->setFixedSize(80, 80);
-    exitToManu->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; background: none;}" +
+    exitToMenu->setFixedSize(80, 80);
+    exitToMenu->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; background: none;}" +
                                    "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
-    layout->addWidget(exitToManu);
+    layout->addWidget(exitToMenu);
 
     repeatThisLevel = new QPushButton("", endWindow);
     path = QCoreApplication::applicationDirPath() + "/Images/levelFinished/restart";
@@ -786,8 +789,8 @@ void Level01::levelEnd() {
 
     connect(nextLevel, SIGNAL(clicked()), levels, SLOT(nextLevel()));
     connect(nextLevel, SIGNAL(clicked()), endWindow, SLOT(close()));
-    connect(exitToManu, SIGNAL(clicked()), levels, SLOT(exitLevel()));
-    connect(exitToManu, SIGNAL(clicked()), endWindow, SLOT(close()));
+    connect(exitToMenu, SIGNAL(clicked()), levels, SLOT(exitLevel()));
+    connect(exitToMenu, SIGNAL(clicked()), endWindow, SLOT(close()));
     connect(repeatThisLevel, SIGNAL(clicked()), this, SLOT(repeatLevel()));
     connect(repeatThisLevel, SIGNAL(clicked()), endWindow, SLOT(close()));
 
@@ -798,7 +801,7 @@ void Level01::levelEnd() {
     player->setVolume(500);
 
     connect(nextLevel, &QPushButton::pressed, player, &QMediaPlayer::play);
-    connect(exitToManu, &QPushButton::pressed, player, &QMediaPlayer::play);
+    connect(exitToMenu, &QPushButton::pressed, player, &QMediaPlayer::play);
     connect(repeatThisLevel, &QPushButton::pressed, player, &QMediaPlayer::play);
 
     endWindow->show();
@@ -806,6 +809,7 @@ void Level01::levelEnd() {
 }
 
 void Level01::gameOver() {
+    // Prozor u slucaju nepredjenog nivoa
     gravityTimerID--;
     disconnect(&timerFireboy, &QTimer::timeout, this, &Level01::moveFireboy);
     disconnect(&timerWatergirl, &QTimer::timeout, this, &Level01::moveWatergirl);
@@ -830,20 +834,20 @@ void Level01::gameOver() {
                                    "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     layout->addWidget(repeatThisLevel);
 
-    exitToManu = new QPushButton("", endWindow);
+    exitToMenu = new QPushButton("", endWindow);
     path = QCoreApplication::applicationDirPath() + "/Images/gameOver/menu";
-    exitToManu->setFixedSize(80, 80);
-    exitToManu->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; background: none;}" +
+    exitToMenu->setFixedSize(80, 80);
+    exitToMenu->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; background: none;}" +
                                    "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
-    layout->addWidget(exitToManu);
+    layout->addWidget(exitToMenu);
 
     endWindow->setLayout(layout);
 
     connect(repeatThisLevel, SIGNAL(clicked()), this, SLOT(repeatLevel()));
     connect(repeatThisLevel, SIGNAL(clicked()), endWindow, SLOT(close()));
 
-    connect(exitToManu, SIGNAL(clicked()), levels, SLOT(exitLevel()));
-    connect(exitToManu, SIGNAL(clicked()), endWindow, SLOT(close()));
+    connect(exitToMenu, SIGNAL(clicked()), levels, SLOT(exitLevel()));
+    connect(exitToMenu, SIGNAL(clicked()), endWindow, SLOT(close()));
 
     QMediaPlayer *player = new QMediaPlayer();
     path = QCoreApplication::applicationDirPath() + "/Sound/click.mp3";
@@ -851,13 +855,16 @@ void Level01::gameOver() {
     player->setVolume(500);
 
     connect(repeatThisLevel, &QPushButton::pressed, player, &QMediaPlayer::play);
-    connect(exitToManu, &QPushButton::pressed, player, &QMediaPlayer::play);
+    connect(exitToMenu, &QPushButton::pressed, player, &QMediaPlayer::play);
 
     endWindow->show();
 
 }
 
 void Level01::repeatLevel() {
+
+    //Postavljanje svih elemenata na pocetne pozicije
+
     watergirl->setPos(100,570);
     while(watergirl->collidesWithBlocks(blocks) != NULL) {
         watergirl->moveBy(0, -1);
@@ -915,6 +922,7 @@ void Level01::repeatLevel() {
 }
 
 void Level01::pause() {
+    // Zaustavljanje animacije
     gravityTimerID--;
     disconnect(&timerFireboy, &QTimer::timeout, this, &Level01::moveFireboy);
     disconnect(&timerWatergirl, &QTimer::timeout, this, &Level01::moveWatergirl);
@@ -940,12 +948,12 @@ void Level01::pause() {
                                    "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     layout->addWidget(repeatThisLevel);
 
-    exitToManu = new QPushButton("", endWindow);
+    exitToMenu = new QPushButton("", endWindow);
     path = QCoreApplication::applicationDirPath() + "/Images/pause/menu";
-    exitToManu->setFixedSize(80, 80);
-    exitToManu->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; background: none;}" +
+    exitToMenu->setFixedSize(80, 80);
+    exitToMenu->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; background: none;}" +
                                    "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
-    layout->addWidget(exitToManu);
+    layout->addWidget(exitToMenu);
 
     resume = new QPushButton("", endWindow);
     path = QCoreApplication::applicationDirPath() + "/Images/pause/play";
@@ -960,8 +968,8 @@ void Level01::pause() {
     connect(repeatThisLevel, SIGNAL(clicked()), this, SLOT(repeatLevel()));
     connect(repeatThisLevel, SIGNAL(clicked()), endWindow, SLOT(close()));
 
-    connect(exitToManu, SIGNAL(clicked()), levels, SLOT(exitLevel()));
-    connect(exitToManu, SIGNAL(clicked()), endWindow, SLOT(close()));
+    connect(exitToMenu, SIGNAL(clicked()), levels, SLOT(exitLevel()));
+    connect(exitToMenu, SIGNAL(clicked()), endWindow, SLOT(close()));
 
     connect(resume, SIGNAL(clicked()), this, SLOT(resumeLevel()));
     connect(resume, SIGNAL(clicked()), endWindow, SLOT(close()));
@@ -972,12 +980,14 @@ void Level01::pause() {
     player->setVolume(500);
 
     connect(repeatThisLevel, &QPushButton::pressed, player, &QMediaPlayer::play);
-    connect(exitToManu, &QPushButton::pressed, player, &QMediaPlayer::play);
+    connect(exitToMenu, &QPushButton::pressed, player, &QMediaPlayer::play);
     connect(resume, &QPushButton::pressed, player, &QMediaPlayer::play);
 
 }
 
 void Level01::resumeLevel() {
+
+    // Ponovno pokretanje tajmera i animacije
 
     gravityTimerID++;
     connect(&timerFireboy, &QTimer::timeout, this, &Level01::moveFireboy);
@@ -987,6 +997,8 @@ void Level01::resumeLevel() {
 
     endWindow->close();
 }
+
+//Postavljanje vremena
 
 void Level01::timerFunc() {
     timerCount++;

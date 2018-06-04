@@ -10,19 +10,21 @@ Levels::Levels(View *v, Title *t, QWidget *parent)
       view(v),
       title(t)
 {
-
+    // Ucitavanje broja zvezdica za svaki nivo i poslednji otkljucani nivo
     QString path = QCoreApplication::applicationDirPath() + "/levelStar.txt";
     std::ifstream f(path.toStdString(), std::ifstream::in);
     f >> Levels::lastUnlocked;
     for(int i = 0; i < 5; i++)
         f >> levelStars[i];
 
+
+    // Postavljanje velicine scene i pozadine
     this->setSceneRect(0,0,1280,760);
     path = QCoreApplication::applicationDirPath() + "/Images/background";
     background = new QGraphicsPixmapItem(QPixmap(path).scaled(1280, 760));
     addItem(background);
 
-    // Postavljamo dugme za start igre
+    // Postavljamo dugme za prvi nivo
     button[0] = new QPushButton("");
     if(levelStars[0] == -1)
         path = QCoreApplication::applicationDirPath() + "/Images/levels/1";
@@ -37,6 +39,7 @@ Levels::Levels(View *v, Title *t, QWidget *parent)
 
 
 
+    // Postavljamo dugme za drugi nivo
     button[1] = new QPushButton("");
     if(levelStars[1] == -1)
         path = QCoreApplication::applicationDirPath() + "/Images/levels/2";
@@ -52,6 +55,7 @@ Levels::Levels(View *v, Title *t, QWidget *parent)
 
 
 
+    // Postavljamo dugme za treci nivo
     button[2] = new QPushButton("");
     if(levelStars[2] == -1)
         path = QCoreApplication::applicationDirPath() + "/Images/levels/3";
@@ -67,6 +71,7 @@ Levels::Levels(View *v, Title *t, QWidget *parent)
 
 
 
+    // Postavljamo dugme za cetvrti nivo
     button[3] = new QPushButton("");
     if(levelStars[3] == -1)
         path = QCoreApplication::applicationDirPath() + "/Images/levels/4";
@@ -80,8 +85,7 @@ Levels::Levels(View *v, Title *t, QWidget *parent)
     connect(button[3], SIGNAL(clicked()), this, SLOT(startLevel4()));
 
 
-
-
+    // Postavljamo dugme za peti nivo
     button[4] = new QPushButton("");
     if(levelStars[4] == -1)
         path = QCoreApplication::applicationDirPath() + "/Images/levels/5";
@@ -94,7 +98,7 @@ Levels::Levels(View *v, Title *t, QWidget *parent)
     addWidget(button[4]);
     connect(button[4], SIGNAL(clicked()), this, SLOT(startLevel5()));
 
-
+    // Postavljamo dugme za povratak u glavni meni
     mainMenu = new QPushButton("");
     path = QCoreApplication::applicationDirPath() + "/Images/levels/back";
     mainMenu->setGeometry(QRect(QPoint(this->width()/3 - 50 - 300, 2 * this->height()/3 + 100), QSize(0, 0)));
@@ -104,6 +108,7 @@ Levels::Levels(View *v, Title *t, QWidget *parent)
     addWidget(mainMenu);
     connect(mainMenu, SIGNAL(clicked()), title, SLOT(back()));
 
+    // Postavljanje zvuka klika
     QMediaPlayer *player = new QMediaPlayer();
     path = QCoreApplication::applicationDirPath() + "/Sound/click.mp3";
     player->setMedia(QUrl::fromLocalFile(path));
@@ -117,6 +122,7 @@ Levels::Levels(View *v, Title *t, QWidget *parent)
     connect(mainMenu, &QPushButton::pressed, player, &QMediaPlayer::play);
 }
 
+//Slotovi za postavljanje scene u zavisnosti od izabranog nivoa
 
 void Levels::startLevel1() {
     currentLevel = 1;
@@ -152,12 +158,15 @@ void Levels::startLevel5() {
 }
 
 
+//Slot za prelazak na sledeci nivo i za povratak na izbor nivoa
 
 void Levels::nextLevel() {
     if(currentLevel == 5) {
         view->setScene(this);
         return;
     }
+    //Azuriranje zvezdica kod nivoa
+
     QString path = QCoreApplication::applicationDirPath() + "/levelStar.txt";
     std::ofstream f(path.toStdString());
     f << std::to_string(Levels::lastUnlocked) + " ";
@@ -171,7 +180,11 @@ void Levels::nextLevel() {
     view->setScene(new Level01("map" + QString::number(currentLevel) +".txt", this));
 }
 
+
+
 void Levels::exitLevel() {
+    // Azuriranje vrednosti o zvezdicama
+
     QString path = QCoreApplication::applicationDirPath() + "/levelStar.txt";
     std::ofstream f(path.toStdString());
     f << std::to_string(Levels::lastUnlocked) + " ";

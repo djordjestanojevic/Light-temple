@@ -13,10 +13,14 @@ Settings::Settings(View * v, Title *t, QWidget *parent)
       title(t)
 {
 
+    // Postavljanje velicine scene i pozadine
+
     this->setSceneRect(0,0,1280,760);
     QString path = QCoreApplication::applicationDirPath() + "/Images/background";
     background = new QGraphicsPixmapItem(QPixmap(path).scaled(1280, 760));
     addItem(background);
+
+    //Postavljanje ikonice fireboy-a
 
     path = QCoreApplication::applicationDirPath() + "/Images/fireboy";
     fireboyLogo = new QGraphicsPixmapItem(QPixmap(path));
@@ -24,11 +28,15 @@ Settings::Settings(View * v, Title *t, QWidget *parent)
     fireboyLogo->setPos(this->width()/3 - 80, this->height()/2 - 250);
     addItem(fireboyLogo);
 
+    // Postavljanje ikonice watergirl
+
     path = QCoreApplication::applicationDirPath() + "/Images/watergirl";
     watergirlLogo = new QGraphicsPixmapItem(QPixmap(path));
     watergirlLogo->setScale(0.5);
     watergirlLogo->setPos(2 * this->width()/3 - 80,  this->height()/2 - 250);
     addItem(watergirlLogo);
+
+    // Postavljanje dumica za promenu kontrola za fireboy-a
 
     fireboyUpKeyIndicator = 0;
     fireboyUp = new QPushButton("");
@@ -60,6 +68,8 @@ Settings::Settings(View * v, Title *t, QWidget *parent)
     addWidget(fireboyRight);
     connect(fireboyRight, SIGNAL(clicked()), this, SLOT(fireboyRightKeyUpdate()));
 
+    // Postavljanje dugmica za promenu kontrola za watergirl
+
     watergirlUpKeyIndicator = 0;
     watergirlUp = new QPushButton("");
     path = QCoreApplication::applicationDirPath() + "/Images/settings/jump";
@@ -90,6 +100,8 @@ Settings::Settings(View * v, Title *t, QWidget *parent)
     addWidget(watergirlRight);
     connect(watergirlRight, SIGNAL(clicked()), this, SLOT(watergirlRightKeyUpdate()));
 
+    //Dodavanje dugmeta za povratak na glavni meni
+
     backToTitle = new QPushButton("");
     path = QCoreApplication::applicationDirPath() + "/Images/settings/back";
     backToTitle->setGeometry(QRect(QPoint(this->width()/2 - 110, this->height()/2 +200), QSize(0, 0)));
@@ -98,6 +110,31 @@ Settings::Settings(View * v, Title *t, QWidget *parent)
                                    "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
     addWidget(backToTitle);
     connect(backToTitle, SIGNAL(clicked()), title, SLOT(back()));
+
+    //Dodavanje dugmeta za ukljucivanje/iskljucivanje zvuka
+
+    mute = new QPushButton("");
+    path = QCoreApplication::applicationDirPath() + "/Images/settings/sound";
+    mute->setGeometry(QRect(QPoint(this->width() - 110, this->height() - 110), QSize(0, 0)));
+    mute->setFixedSize(80, 80);
+    mute->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; font-size: 30px; background-color: rgba(1, 1, 1, 0);}" +
+                                   "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
+    addWidget(mute);
+
+    //Ubacivanje melodije u igricu
+
+    QMediaPlaylist *playList = new QMediaPlaylist();
+    path = QCoreApplication::applicationDirPath() + "/Sound/e.mp3";
+    playList->addMedia(QUrl("http://soundimage.org/wp-content/uploads/2016/07/Fantasy_Game_Background_Looping.mp3"));
+    playList->setPlaybackMode(QMediaPlaylist::Loop);
+
+    sound = new QMediaPlayer();
+    sound->setPlaylist(playList);
+    sound->setVolume(20);
+    sound->play();
+    connect(mute, &QPushButton::pressed, this, &Settings::muteButton);
+
+    // Podesavanje zvuka klika
 
     QMediaPlayer *player = new QMediaPlayer();
     path = QCoreApplication::applicationDirPath() + "/Sound/click.mp3";
@@ -111,8 +148,10 @@ Settings::Settings(View * v, Title *t, QWidget *parent)
     connect(watergirlRight, &QPushButton::pressed, player, &QMediaPlayer::play);
     connect(watergirlUp, &QPushButton::pressed, player, &QMediaPlayer::play);
     connect(backToTitle, &QPushButton::pressed, player, &QMediaPlayer::play);
+    connect(mute, &QPushButton::pressed, player, &QMediaPlayer::play);
 }
 
+//Slotovi koji postavljaju indikatore promene kontrole
 
 void Settings::watergirlUpKeyUpdate(){
     watergirlUpKeyIndicator = 1;
@@ -137,6 +176,8 @@ void Settings::fireboyLeftKeyUpdate(){
 void Settings::fireboyRightKeyUpdate(){
     fireboyRightKeyIndicator = 1;
 }
+
+// Postavljanje novih kontrola
 
 void Settings::keyPressEvent(QKeyEvent *event)
 {
@@ -184,4 +225,20 @@ void Settings::keyPressEvent(QKeyEvent *event)
             watergirlUpKey = event->key();
     }
 
+}
+
+// Promena ikonice i ukljucivanje/iskljucivanje zvuka
+
+void Settings::muteButton() {
+    QString path;
+    if(sound->isMuted()) {
+        sound->setMuted(false);
+        path = QCoreApplication::applicationDirPath() + "/Images/settings/sound";
+    }
+    else {
+        sound->setMuted(true);
+        path = QCoreApplication::applicationDirPath() + "/Images/settings/sound_off";
+    }
+    mute->setStyleSheet("QPushButton {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 2px; font-size: 30px; background-color: rgba(1, 1, 1, 0);}" +
+                                   "QPushButton:hover {border-image: url(" + path + ") 0 0 0 0 stretch stretch; margin: 0px;}");
 }
